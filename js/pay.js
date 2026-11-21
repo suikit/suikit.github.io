@@ -8,8 +8,7 @@ import { Transaction } from 'https://esm.sh/@mysten/sui@2.37.0/transactions';
 import { getWallets } from 'https://esm.sh/@mysten/wallet-standard@0.19.0';
 
 // ---- Config ---------------------------------------------------------------
-// TODO: replace with the seller's Sui address that should receive the USDC.
-const SELLER_ADDRESS = '0xREPLACE_WITH_SELLER_ADDRESS';
+const SELLER_ADDRESS = '0x2e1e0fcc8cfe489fd268ab170161684480c2b0152f849a6c54fa1690dffeea97';
 const PRICE_USDC = 100;                     // display units
 const USDC_DECIMALS = 6;
 const USDC_TYPE =
