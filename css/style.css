@@ -186,8 +186,12 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
 .strip p em{font-style:normal;color:var(--blue);filter:brightness(1.6)}
 
 /* ---------- feature block (deepbook-style numbered) ---------- */
-.section{padding:96px 0}
+.section{padding:96px 0;position:relative;overflow:hidden}
 .section.alt{background:#f6f7fb}
+.section .wm{position:absolute;pointer-events:none;z-index:0;color:var(--blue)}
+.section .wm.sui{right:-5%;top:-8%;width:min(36vw,400px);opacity:.05;transform:rotate(9deg)}
+.section .wm.db{left:-4%;bottom:-10%;width:min(26vw,290px);opacity:.045;transform:rotate(-7deg)}
+.section .container{position:relative;z-index:1}
 .section .kicker{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--blue);margin-bottom:16px;
