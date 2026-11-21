@@ -208,7 +208,7 @@ async function connect(w) {
         account = acc;
         $('pay-account').textContent = short(account.address);
         $('pay-account').title = account.address;
-        updateNavConnect();
+        updateAccountDisplay();
         show('pay');
         detectPriorPayment();
     } catch (e) {
@@ -276,19 +276,7 @@ function copyDigest() {
     });
 }
 
-function updateNavConnect() {
-    const btn = $('nav-connect');
-    if (btn) {
-        if (account) {
-            btn.textContent = short(account.address);
-            btn.title = `${account.address} — click to disconnect`;
-            btn.classList.add('connected');
-        } else {
-            btn.textContent = 'Connect';
-            btn.title = 'Connect a Sui wallet';
-            btn.classList.remove('connected');
-        }
-    }
+function updateAccountDisplay() {
     const acct = $('pay-acct');
     if (acct) {
         acct.hidden = !account;
@@ -301,16 +289,10 @@ function disconnect() {
     wallet = null;
     account = null;
     paidDigest = null;
-    updateNavConnect();
+    updateAccountDisplay();
 }
 
 export function initCheckout() {
-    $('nav-connect')?.addEventListener('click', () => {
-        if (account) { disconnect(); return; }
-        modal.classList.add('open');
-        show('wallets');
-        renderWalletList();
-    });
     $('pay-disconnect')?.addEventListener('click', () => {
         disconnect();
         show('wallets');

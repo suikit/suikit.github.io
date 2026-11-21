@@ -408,20 +408,6 @@ footer{background:var(--ink);color:#fff;padding:72px 0 40px}
 .alt-pay a{text-decoration:underline}
 
 /* ---------- nav connect button ---------- */
-.btn-ghost{
-  background:transparent;color:#fff;cursor:pointer;
-  border:1px solid rgba(255,255,255,.45);border-radius:999px;
-  font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
-}
-.btn-ghost:hover{border-color:#fff}
-.btn-ghost.connected{
-  background:rgba(255,255,255,.14);border-color:rgba(126,226,168,.6);
-}
-.btn-ghost.connected::before{
-  content:'';display:inline-block;width:7px;height:7px;border-radius:50%;
-  background:#7ee2a8;box-shadow:0 0 6px #7ee2a8;margin-right:8px;
-  vertical-align:1px;
-}
 .nav-links button{border-width:1px}
 
 /* ---------- mobile nav: hide text links, keep lang switcher + CTA ---------- */
