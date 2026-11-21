@@ -32,7 +32,6 @@ const I18N = {
         noDigest: 'Transaction signed but no digest returned.',
         payFailed: 'Payment failed or was rejected.',
         payBtn: `Pay $${100} USDC`,
-        tgText: (d) => `Sui kit purchase — digest: ${d} — GitHub user:  — email (optional): `,
     },
     pt: {
         noWallet1: 'Nenhuma carteira Sui detectada neste navegador.',
@@ -47,7 +46,6 @@ const I18N = {
         noDigest: 'Transação assinada, mas nenhum digest retornado.',
         payFailed: 'Pagamento falhou ou foi rejeitado.',
         payBtn: 'Pagar $100 USDC',
-        tgText: (d) => `Compra do Sui kit — digest: ${d} — usuário GitHub:  — e-mail (opcional): `,
     },
 }[LANG];
 
@@ -193,7 +191,7 @@ async function pay() {
         $('pay-digest').textContent = digest;
         $('suiscan-link').href = `https://suiscan.xyz/mainnet/tx/${digest}`;
         const tg = $('tg-final-link');
-        tg.href = `${TELEGRAM_URL}?text=${encodeURIComponent(I18N.tgText(digest))}`;
+        tg.href = `${TELEGRAM_URL}?start=${digest}`;
         show('done');
     } catch (e) {
         fail(e?.message || I18N.payFailed);
