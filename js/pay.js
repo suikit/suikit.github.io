@@ -278,15 +278,21 @@ function copyDigest() {
 
 function updateNavConnect() {
     const btn = $('nav-connect');
-    if (!btn) return;
-    if (account) {
-        btn.textContent = short(account.address);
-        btn.title = `${account.address} — click to disconnect`;
-        btn.classList.add('connected');
-    } else {
-        btn.textContent = 'Connect';
-        btn.title = 'Connect a Sui wallet';
-        btn.classList.remove('connected');
+    if (btn) {
+        if (account) {
+            btn.textContent = short(account.address);
+            btn.title = `${account.address} — click to disconnect`;
+            btn.classList.add('connected');
+        } else {
+            btn.textContent = 'Connect';
+            btn.title = 'Connect a Sui wallet';
+            btn.classList.remove('connected');
+        }
+    }
+    const acct = $('pay-acct');
+    if (acct) {
+        acct.hidden = !account;
+        if (account) $('pay-acct-addr').textContent = account.address;
     }
 }
 
@@ -302,6 +308,11 @@ export function initCheckout() {
     $('nav-connect')?.addEventListener('click', () => {
         if (account) { disconnect(); return; }
         modal.classList.add('open');
+        show('wallets');
+        renderWalletList();
+    });
+    $('pay-disconnect')?.addEventListener('click', () => {
+        disconnect();
         show('wallets');
         renderWalletList();
     });
