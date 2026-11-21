@@ -84,6 +84,40 @@ async function waitForTx(digest, tries = 8) {
     return null;
 }
 
+function normAddr(addr) {
+    try { return '0x' + BigInt(addr).toString(16).padStart(64, '0'); } catch { return ''; }
+}
+
+// Did this wallet already pay? Scan buyer->seller txs for a >=PRICE_USDC
+// USDC credit to SELLER_ADDRESS and return the digest (or null).
+async function findPayment(owner) {
+    const need = BigInt(PRICE_USDC) * 10n ** BigInt(USDC_DECIMALS);
+    const seller = normAddr(SELLER_ADDRESS);
+    const match = (t) => (t.balanceChanges || []).some((c) =>
+        normAddr(c.owner?.AddressOwner) === seller &&
+        c.coinType === USDC_TYPE && BigInt(c.amount) >= need);
+    for (const filter of [
+        { FromAndToAddress: { from: owner, to: SELLER_ADDRESS } },
+        { FromAddress: owner },
+    ]) {
+        let cursor = null, pages = 0;
+        try {
+            do {
+                const res = await rpc('suix_queryTransactionBlocks', [{
+                    filter,
+                    options: { showBalanceChanges: true },
+                    order: 'descending', limit: 50, cursor,
+                }]);
+                const hit = (res?.data || []).find(match);
+                if (hit) return hit.digest;
+                cursor = res?.hasNextPage ? res.nextCursor : null;
+            } while (cursor && ++pages < 10);
+            return null;      // filter worked, nothing found
+        } catch { /* filter unsupported — try next */ }
+    }
+    return null;
+}
+
 const $ = (id) => document.getElementById(id);
 const modal = $('pay-modal');
 const steps = {
@@ -95,6 +129,38 @@ const steps = {
 
 let wallet = null;
 let account = null;
+let paidDigest = null;
+
+function rememberPaid(addr, digest) {
+    try { localStorage.setItem('suikit-paid', JSON.stringify({ addr, digest })); } catch {}
+}
+
+function showDone(digest) {
+    $('pay-digest').textContent = digest;
+    $('suiscan-link').href = `https://suiscan.xyz/mainnet/tx/${digest}`;
+    $('tg-final-link').href = `${TELEGRAM_URL}?start=${digest}`;
+    show('done');
+}
+
+// After connect, check on-chain whether this address already paid and jump
+// straight to the "paid" screen so buyers can resume the invite flow.
+async function detectPriorPayment() {
+    const acc = account;
+    if (!acc || paidDigest) return;
+    try {
+        const cached = JSON.parse(localStorage.getItem('suikit-paid') || 'null');
+        if (normAddr(cached?.addr) === normAddr(acc.address) && cached?.digest) {
+            paidDigest = cached.digest;
+            return showDone(paidDigest);
+        }
+    } catch {}
+    const d = await findPayment(acc.address).catch(() => null);
+    if (d && account === acc) {
+        paidDigest = d;
+        rememberPaid(acc.address, d);
+        showDone(d);
+    }
+}
 
 function show(step) {
     Object.values(steps).forEach((el) => el.classList.add('hidden'));
@@ -144,12 +210,14 @@ async function connect(w) {
         $('pay-account').title = account.address;
         updateNavConnect();
         show('pay');
+        detectPriorPayment();
     } catch (e) {
         fail(e?.message || I18N.connectCancelled);
     }
 }
 
 async function pay() {
+    if (paidDigest) return showDone(paidDigest);
     if (SELLER_ADDRESS.includes('REPLACE')) {
         return fail(I18N.noSeller);
     }
@@ -188,11 +256,9 @@ async function pay() {
 
         try { await waitForTx(digest); } catch { /* show digest anyway */ }
 
-        $('pay-digest').textContent = digest;
-        $('suiscan-link').href = `https://suiscan.xyz/mainnet/tx/${digest}`;
-        const tg = $('tg-final-link');
-        tg.href = `${TELEGRAM_URL}?start=${digest}`;
-        show('done');
+        paidDigest = digest;
+        rememberPaid(account.address, digest);
+        showDone(digest);
     } catch (e) {
         fail(e?.message || I18N.payFailed);
     } finally {
@@ -227,6 +293,7 @@ function disconnect() {
     try { wallet?.features['standard:disconnect']?.disconnect(); } catch {}
     wallet = null;
     account = null;
+    paidDigest = null;
     updateNavConnect();
 }
 
@@ -242,7 +309,7 @@ export function initCheckout() {
             e.preventDefault();
             modal.classList.add('open');
             if (account) {
-                show('pay');
+                paidDigest ? showDone(paidDigest) : show('pay');
             } else {
                 show('wallets');
                 renderWalletList();
