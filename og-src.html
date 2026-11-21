@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- Source for og.png (1200x630). Render with headless Chrome:
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless \
+    --screenshot=og.png --window-size=1200,630 --hide-scrollbars \
+    file://$PWD/og-src.html
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+:root{
+  --blue:#2b4bff;
+  --blue-deep:#0a1fd4;
+  --ink:#0b0e14;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  background:
+    radial-gradient(1100px 500px at 85% -10%,rgba(120,150,255,.55) 0%,transparent 60%),
+    radial-gradient(800px 400px at -10% 110%,rgba(0,10,120,.55) 0%,transparent 55%),
+    linear-gradient(135deg,var(--blue-deep) 0%,var(--blue) 55%,#3a5bff 100%);
+  color:#fff;position:relative;
+}
+.wm{position:absolute;pointer-events:none;z-index:0;color:#fff}
+.wm.sui{left:-2%;bottom:-14%;width:460px;opacity:.07;transform:rotate(-8deg)}
+.wm.db{right:34%;top:-6%;width:280px;opacity:.06;transform:rotate(6deg)}
+
+.frame{position:relative;z-index:1;height:100%;padding:56px 64px;
+  display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+
+.logo{font-weight:800;font-size:22px;letter-spacing:-.02em;margin-bottom:34px}
+.logo span{opacity:.55;font-weight:600}
+.kicker{
+  font-family:var(--mono);font-size:13px;letter-spacing:.18em;
+  text-transform:uppercase;opacity:.75;margin-bottom:22px;
+}
+h1{font-size:62px;font-weight:800;line-height:1.04;letter-spacing:-.035em}
+p.sub{margin-top:22px;font-size:19px;line-height:1.5;opacity:.9;max-width:480px}
+.pill-row{margin-top:32px;display:flex;gap:14px;align-items:center}
+.pill{
+  font-family:var(--mono);font-size:14px;color:#fff;
+  border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:12px 20px;
+}
+.pill b{font-weight:700}
+.domain{
+  position:absolute;right:64px;bottom:40px;
+  font-family:var(--mono);font-size:14px;letter-spacing:.12em;
+  color:rgba(255,255,255,.7);
+}
+
+/* dashboard mock — same look as the hero panel */
+.dash-wrap{position:relative}
+.dash-wrap::before{
+  content:'';position:absolute;inset:8% -6% -4% 10%;
+  background:radial-gradient(60% 60% at 50% 60%,rgba(110,140,255,.4) 0%,transparent 75%);
+  filter:blur(24px);
+}
+.dash{
+  position:relative;
+  background:linear-gradient(165deg,#141a38 0%,#0b0f24 55%,#090d1f 100%);
+  border:1px solid rgba(150,170,255,.22);border-radius:18px;
+  font-family:var(--mono);color:#cdd6ff;overflow:hidden;
+  box-shadow:0 60px 120px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);
+  transform:perspective(1400px) rotateY(-7deg) rotateX(3deg);
+}
+.dash .bar{display:flex;gap:7px;align-items:center;
+  padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+.dash .bar i{width:9px;height:9px;border-radius:50%;display:block}
+.dash .bar i:nth-child(1){background:#ff5f57}
+.dash .bar i:nth-child(2){background:#febc2e}
+.dash .bar i:nth-child(3){background:#28c840}
+.dash .bar .title{margin-left:12px;font-size:10px;letter-spacing:.16em;color:#7c86b8}
+.dash .bar .live{margin-left:auto;font-size:9px;letter-spacing:.14em;color:#7ee2a8}
+.dash .body{padding:18px 18px 14px}
+.dash .stats{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.dash .stats .lbl{font-size:9px;letter-spacing:.2em;color:#5a648f;width:100%}
+.dash .stats .val{font-size:30px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1}
+.dash .stats .chg{font-size:11px;color:#7ee2a8;background:rgba(126,226,168,.12);
+  border:1px solid rgba(126,226,168,.25);border-radius:6px;padding:4px 8px}
+.dash .stats .mini{margin-left:auto;text-align:right;font-size:10px;color:#8a94c4;line-height:1.7}
+.dash .stats .mini b{color:#e4e9ff;font-weight:600}
+.dash .chart{margin-top:12px}
+.dash svg{width:100%;height:96px;display:block}
+.dash .book{margin-top:12px;border-top:1px solid rgba(255,255,255,.07)}
+.dash .bkhead{display:grid;grid-template-columns:40px 1fr 68px;gap:8px;
+  font-size:9px;letter-spacing:.14em;color:#5a648f;padding:9px 0 4px}
+.dash .bkrow{display:grid;grid-template-columns:40px 1fr 68px;gap:8px;
+  font-size:10px;padding:4px 0;align-items:center}
+.dash .bkrow .side{font-size:9px;letter-spacing:.1em}
+.dash .bkrow .side.ask{color:#ff8f9e}
+.dash .bkrow .side.bid{color:#6ee7a8}
+.dash .bkrow .depth{height:8px;border-radius:3px}
+.dash .bkrow .depth.ask{background:linear-gradient(90deg,rgba(255,143,158,0),rgba(255,143,158,.35));margin-left:auto}
+.dash .bkrow .depth.bid{background:linear-gradient(90deg,rgba(110,231,168,.4),rgba(110,231,168,0))}
+.dash .bkrow .px{color:#aab3dd;text-align:right}
+.dash .foot{display:flex;gap:8px;align-items:center;margin-top:12px;
+  padding-top:12px;border-top:1px solid rgba(255,255,255,.07);font-size:9px}
+.dash .foot .tag{border-radius:6px;padding:4px 9px;font-size:9px;letter-spacing:.1em;font-weight:600}
+.dash .foot .tag.hold{background:rgba(255,210,90,.12);color:#ffd25a;border:1px solid rgba(255,210,90,.3)}
+.dash .foot .tag.ok{background:rgba(126,226,168,.1);color:#7ee2a8;border:1px solid rgba(126,226,168,.25)}
+.dash .foot .tag.dim{background:rgba(140,150,190,.1);color:#8a94c4;border:1px solid rgba(140,150,190,.2)}
+.dash .foot .dim{margin-left:auto;color:#5a648f;font-size:9px;letter-spacing:.1em}
+</style>
+</head>
+<body>
+
+<svg class="wm sui" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+<svg class="wm db" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+
+<div class="frame">
+  <div>
+    <div class="logo">SUI KIT<span> / DEEPBOOK V3</span></div>
+    <div class="kicker">Execution infra · Quant layer · Ops tooling</div>
+    <h1>Build a bot on<br>the book behind Sui.</h1>
+    <p class="sub">A production-shaped DeepBook V3 development kit — sold as
+    source, not signals. You get the code. You build the edge.</p>
+    <div class="pill-row">
+      <span class="pill"><b>$100</b> early access · reg. $199</span>
+      <span class="pill">private repo invite</span>
+    </div>
+  </div>
+
+  <div class="dash-wrap">
+    <div class="dash">
+      <div class="bar"><i></i><i></i><i></i><span class="title">sui-kit · dashboard</span><span class="live">● LIVE</span></div>
+      <div class="body">
+        <div class="stats">
+          <span class="lbl">NET ASSET VALUE</span>
+          <span class="val">$42,318.60</span>
+          <span class="chg">+6.8% 7d</span>
+          <span class="mini">SUI/USDC<br><b>open orders 4</b></span>
+        </div>
+        <div class="chart">
+        <svg viewBox="0 0 400 96" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="navfill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7ee2a8" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#7ee2a8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(150,170,255,.09)" stroke-width="1">
+            <line x1="0" y1="18" x2="400" y2="18"/><line x1="0" y1="40" x2="400" y2="40"/>
+            <line x1="0" y1="62" x2="400" y2="62"/><line x1="0" y1="84" x2="400" y2="84"/>
+          </g>
+          <path d="M0,70 L30,64 L60,72 L90,55 L120,61 L150,48 L180,54 L210,41 L240,47 L270,34 L300,40 L330,27 L360,32 L400,18 L400,96 L0,96 Z" fill="url(#navfill)"/>
+          <path d="M0,70 L30,64 L60,72 L90,55 L120,61 L150,48 L180,54 L210,41 L240,47 L270,34 L300,40 L330,27 L360,32 L400,18" fill="none" stroke="#7ee2a8" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="400" cy="18" r="3.5" fill="#7ee2a8"/>
+          <circle cx="400" cy="18" r="8" fill="none" stroke="#7ee2a8" stroke-opacity=".4"/>
+        </svg>
+        </div>
+        <div class="book">
+          <div class="bkhead"><span>side</span><span>depth</span><span style="text-align:right">price</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:38%"></div><span class="px">0.7841</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:24%"></div><span class="px">0.7830</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:55%"></div><span class="px">0.7808</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:31%"></div><span class="px">0.7795</span></div>
+        </div>
+        <div class="foot">
+          <span class="tag hold">HOLD</span>
+          <span class="tag ok">QUANT ENGINE</span>
+          <span class="tag dim">VOLATILITY_HARVEST</span>
+          <span class="dim">DeepBook V3 · gRPC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="domain">suikit.dev</div>
+</div>
+
+</body>
+</html>
