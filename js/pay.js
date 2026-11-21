@@ -14,7 +14,7 @@ const USDC_TYPE =
     '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC';
 const CHAIN = 'sui:mainnet';
 const RPC_URL = 'https://fullnode.mainnet.sui.io:443';
-const TELEGRAM_URL = 'https://t.me/YOUR_TELEGRAM_HANDLE';
+const TELEGRAM_URL = 'https://t.me/sui_kit_bot';
 // ---------------------------------------------------------------------------
 
 const LANG = (document.documentElement.lang || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
