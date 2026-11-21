@@ -1,0 +1,32 @@
+# Sui Kit — Sui DeepBook V3 Bot Kit
+
+> A source-available development kit for building trading bots on DeepBook V3,
+> the native liquidity layer of the Sui blockchain. $100 USDC one-time purchase,
+> delivered as read access to a private GitHub repository.
+
+## What it is
+
+- Execution infrastructure for DeepBook V3: BalanceManager lifecycle, atomic
+  cancel+place orders, MoveAbort code 3 mitigation, gas-reserve logic
+- Deterministic 5-phase quant decision layer (optional LLM overlay)
+- Ops tooling: live dashboard, Telegram alerts & control, fill detection,
+  cost-basis tracking, error/stagnation monitoring
+- Sold as source code + documentation. Not a profit machine, not a signal
+  service, not a managed product.
+
+## Pages
+
+- [Home (EN)](https://suikit.dev/) — overview, pricing, FAQ
+- [Home (PT)](https://suikit.dev/index.pt.html)
+- [Terms & Privacy (EN)](https://suikit.dev/legal.html)
+- [Termos & Privacidade (PT)](https://suikit.dev/legal.pt.html)
+
+## Facts
+
+- Price: $100 USDC (early access; regular price $199 planned)
+- Delivery: private GitHub repo invite after on-chain payment verification
+- License: personal use; redistribution/resale prohibited
+- Payments: USDC on Sui mainnet; all sales final (no refunds)
+- Independence: not affiliated with, endorsed, or sponsored by Mysten Labs
+  or the Sui Foundation
+- Contact: Telegram bot @sui_kit_bot

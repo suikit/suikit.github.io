@@ -12,15 +12,69 @@
 <link rel="canonical" href="https://suikit.dev/">
 <meta property="og:url" content="https://suikit.dev/">
 <meta property="og:image" content="https://suikit.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sui DeepBook V3 Bot Kit">
 <meta name="twitter:description" content="DeepBook V3 execution infrastructure + quant decision layer + ops tooling. $100 USDC, sold as source.">
+<meta name="twitter:image" content="https://suikit.dev/og.png">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="alternate" hreflang="en" href="index.html">
-<link rel="alternate" hreflang="pt" href="index.pt.html">
+<link rel="alternate" hreflang="en" href="https://suikit.dev/">
+<link rel="alternate" hreflang="pt" href="https://suikit.dev/index.pt.html">
+<link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
 <link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://suikit.dev/#website",
+      "url": "https://suikit.dev/",
+      "name": "Sui Kit",
+      "inLanguage": ["en", "pt-BR"]
+    },
+    {
+      "@type": "Product",
+      "name": "Sui DeepBook V3 Bot Kit",
+      "description": "Development kit for building trading bots on DeepBook V3 (Sui): execution engine, deterministic quant decision layer, and ops tooling — sold as source code.",
+      "url": "https://suikit.dev/",
+      "image": "https://suikit.dev/og.png",
+      "brand": { "@type": "Brand", "name": "Sui Kit" },
+      "offers": {
+        "@type": "Offer",
+        "price": "100",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://suikit.dev/"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Does this bot make money?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No claims are made. The kit sells execution infrastructure and implementation know-how for DeepBook V3 — reference strategies for study and extension, not a promise of profit." } },
+        { "@type": "Question", "name": "What do I need to run it?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Node.js 20+, a Sui wallet with a DeepBook V3 BalanceManager object, and a small amount of SUI for gas. LLM integrations are optional." } },
+        { "@type": "Question", "name": "How is access delivered?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Pay $100 USDC on-chain, then the payment is verified on-chain and you are invited to the private GitHub repository." } },
+        { "@type": "Question", "name": "Which pools does it trade?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The execution layer is pool-agnostic. The reference config concentrates on SUI/USDC and treats satellite pools as cleanup targets." } },
+        { "@type": "Question", "name": "What is the refund policy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Payments are made on-chain in USDC and cannot be reversed. All sales are final — no refunds once payment is verified." } },
+        { "@type": "Question", "name": "Can I redistribute or resell it?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The license grants personal use only. Public redistribution and resale are prohibited." } },
+        { "@type": "Question", "name": "Is it production-tested?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The codebase is a snapshot of a bot that has run live on Sui mainnet. Live operation in your environment is your responsibility." } },
+        { "@type": "Question", "name": "Is it affiliated with Mysten Labs or the Sui Foundation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. It is an independent project, not affiliated with, endorsed, or sponsored by Mysten Labs or the Sui Foundation." } }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
