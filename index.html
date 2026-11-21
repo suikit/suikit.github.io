@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sui DeepBook V3 Bot Kit — Build on the book behind Sui</title>
+<meta name="description" content="A production-shaped DeepBook V3 trading bot development kit for Sui. gRPC execution engine, quant decision layer, ops tooling — sold as source, not signals.">
+<!-- OGP / social preview -->
+<meta property="og:title" content="Sui DeepBook V3 Bot Kit — Build on the book behind Sui">
+<meta property="og:description" content="Production-shaped DeepBook V3 bot development kit. Execution infrastructure, quant decision layer, ops tooling. $100 USDC · source access.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://suikit.dev/">
+<meta property="og:url" content="https://suikit.dev/">
+<!-- TODO: add og:image once an image asset exists (PNG 1200x630)
+<meta property="og:image" content="https://suikit.dev/og.png">
+-->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sui DeepBook V3 Bot Kit">
+<meta name="twitter:description" content="DeepBook V3 execution infrastructure + quant decision layer + ops tooling. $100 USDC, sold as source.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="pt" href="index.pt.html">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">SUI KIT</div>
+    <div class="nav-links">
+      <a href="#what">The Kit</a>
+      <a href="#inside">Inside</a>
+      <a href="#faq">FAQ</a>
+      <span class="lang-sw"><strong>EN</strong> · <a href="index.pt.html">PT</a></span>
+      <button class="btn btn-ghost btn-nav" id="nav-connect">Connect</button>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Get Access — $100</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <!-- Sui droplet watermark -->
+  <svg class="wm sui" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <!-- DeepBook mark watermark -->
+  <svg class="wm db" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+  <div class="container">
+    <div>
+      <div class="kicker">Sui · DeepBook V3 · Source-available kit</div>
+      <h1>Build a bot<br>on the book<br>behind Sui.</h1>
+      <p>A production-shaped development kit for DeepBook V3 — real BalanceManager
+      execution, a deterministic quant layer, and the ops tooling to run it.
+      You get the source. You build the edge.</p>
+      <div class="cta-row">
+        <a href="#" class="btn btn-white" data-open-pay>Get Access</a>
+        <span class="price-tag">$100 early access · reg. $199 · repo invite</span>
+      </div>
+    </div>
+    <div class="dash-wrap">
+    <div class="dash">
+      <div class="bar"><i></i><i></i><i></i><span class="title">sui-kit · dashboard</span><span class="live">LIVE</span></div>
+      <div class="body">
+        <div class="stats">
+          <span class="lbl">NET ASSET VALUE</span>
+          <span class="val">$42,318.60</span>
+          <span class="chg">+6.8% 7d</span>
+          <span class="mini">SUI/USDC<br><b>open orders 4</b></span>
+        </div>
+        <div class="chart">
+        <svg viewBox="0 0 400 110" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="navfill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7ee2a8" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#7ee2a8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(150,170,255,.09)" stroke-width="1">
+            <line x1="0" y1="20" x2="400" y2="20"/><line x1="0" y1="45" x2="400" y2="45"/>
+            <line x1="0" y1="70" x2="400" y2="70"/><line x1="0" y1="95" x2="400" y2="95"/>
+          </g>
+          <path d="M0,78 L30,72 L60,80 L90,62 L120,68 L150,54 L180,60 L210,46 L240,52 L270,38 L300,44 L330,30 L360,36 L400,20 L400,110 L0,110 Z" fill="url(#navfill)"/>
+          <path d="M0,78 L30,72 L60,80 L90,62 L120,68 L150,54 L180,60 L210,46 L240,52 L270,38 L300,44 L330,30 L360,36 L400,20" fill="none" stroke="#7ee2a8" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="400" cy="20" r="3.5" fill="#7ee2a8"/>
+          <circle cx="400" cy="20" r="8" fill="none" stroke="#7ee2a8" stroke-opacity=".4"/>
+        </svg>
+        </div>
+        <div class="book">
+          <div class="bkhead"><span>side</span><span>depth</span><span style="text-align:right">price</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:38%"></div><span class="px">0.7841</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:24%"></div><span class="px">0.7830</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:55%"></div><span class="px">0.7808</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:31%"></div><span class="px">0.7795</span></div>
+        </div>
+        <div class="foot">
+          <span class="pill hold">HOLD</span>
+          <span class="pill ok">QUANT ENGINE</span>
+          <span class="pill dim">VOLATILITY_HARVEST</span>
+          <span class="dim">DeepBook V3 · gRPC</span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</header>
+
+<section class="strip">
+  <div class="container">
+    <p>This is not a profit machine. It is the <em>execution infrastructure</em> —
+    the unglamorous 80% of an on-chain bot that everyone gets wrong —
+    already built, wired, and running.</p>
+  </div>
+</section>
+
+<section class="section" id="what">
+  <div class="container">
+    <div class="kicker">What it is</div>
+    <h2>One kit, three layers that took months to get right.</h2>
+    <p class="lead">DeepBook V3 looks simple until you ship against it. This kit is
+    the hardened skeleton of a bot that has actually traded on mainnet — sold as
+    source code and documentation, not as a service or a signal.</p>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Execution engine</h3>
+        <p>BalanceManager lifecycle (free / locked / settled), atomic cancel+place
+        transactions, MoveAbort&nbsp;code&nbsp;3 mitigation, and gas-reserve logic —
+        the parts the docs don't spell out.</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>Decision layer</h3>
+        <p>A deterministic 5-phase quant judgement with a single optional DeepSeek
+        overlay. No LLM touches the book when data is missing — orders stay put.</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>Ops tooling</h3>
+        <p>Live HTML dashboard, Telegram alerts &amp; control, fill detection,
+        cost-basis tracking, error watcher and stagnation monitoring out of the box.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="inside">
+  <div class="container">
+    <div class="kicker">Inside the repo</div>
+    <h2>The edge cases are the product.</h2>
+
+    <div class="rows">
+      <div class="row">
+        <div class="n">01</div>
+        <h3>Balance lifecycle, done right</h3>
+        <p>Track free vs locked vs settled balances per pool, sync them against
+        on-chain state, and reconcile with open orders — so your bot never orders
+        against money it doesn't have.</p>
+      </div>
+      <div class="row">
+        <div class="n">02</div>
+        <h3>MoveAbort code&nbsp;3 workaround</h3>
+        <p>Automatically detect insufficient or locked DEEP fee balance and flip
+        <code>pay_with_deep=false</code> — the single most common silent failure
+        when placing DeepBook V3 orders.</p>
+      </div>
+      <div class="row">
+        <div class="n">03</div>
+        <h3>Atomic order management</h3>
+        <p>Cancel and place in one transaction. Order TTL re-extension on a 7-day
+        cycle. Stale-price filtering. Satellite pool cleanup. All wired, all
+        commented.</p>
+      </div>
+      <div class="row">
+        <div class="n">04</div>
+        <h3>gRPC-native client</h3>
+        <p>Direct Sui gRPC connectivity with a compatibility layer that mirrors
+        the old JSON-RPC surface — no deprecated endpoints, no rewrites.</p>
+      </div>
+      <div class="row">
+        <div class="n">05</div>
+        <h3>Fill &amp; cost-basis tracking</h3>
+        <p>Detect fills, maintain cost basis, persist trailing state and
+        hold-benchmark tracking across restarts — the bookkeeping every strategy
+        needs and nobody wants to write.</p>
+      </div>
+      <div class="row">
+        <div class="n">06</div>
+        <h3>Safety by default</h3>
+        <p>When price data is missing the bot keeps existing limits and does
+        nothing. Duplicate-instance lock, cooldowns, daily caps, and
+        consecutive-loss brakes are built in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="get">
+      <div>
+        <div class="kicker">What you get</div>
+        <h2>Full source. Real docs. No black box.</h2>
+        <ul>
+          <li>Complete Node.js codebase (~10k LOC) with English comments throughout</li>
+          <li>Architecture doc, strategy spec, and annotated <code>.env.example</code></li>
+          <li>Reference strategies: volatility-harvest ladder, sniper, trend-follow</li>
+          <li>Python shadow-committee for research comparisons (optional)</li>
+          <li>Scripts: balance-manager inspector, gRPC verifier, kill-switch</li>
+          <li>Personal-use license — run it, read it, modify it</li>
+        </ul>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div><span class="dim">$</span> npm ci && npm test</div>
+        <div><span class="ok"># tests 31 · pass 31</span></div>
+        <div><span class="dim">$</span> cp .env.example .env</div>
+        <div><span class="dim"># set SUI_PRIVATE_KEY, BALANCE_MANAGER_ID</span></div>
+        <div><span class="dim">$</span> node scripts/verify_grpc.mjs</div>
+        <div><span class="ok"># gRPC connected · manager found</span></div>
+        <div><span class="dim">$</span> npm start</div>
+        <div><span class="ok"># bot_deepbook → DeepBook V3 · SUI/USDC</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="kicker">Fit check</div>
+    <h2>Know what you're buying.</h2>
+    <div class="who">
+      <div class="panel yes">
+        <h3>This kit is for you if…</h3>
+        <ul>
+          <li>You write JavaScript and want to build on DeepBook V3 without rediscovering every edge case yourself.</li>
+          <li>You want a working BalanceManager execution reference — not a whitepaper.</li>
+          <li>You plan to write your own strategy on proven plumbing.</li>
+          <li>You run your own infra and want full control of keys, sizes, and gates.</li>
+        </ul>
+      </div>
+      <div class="panel no">
+        <h3>This kit is NOT…</h3>
+        <ul>
+          <li>A profitable trading system, signal service, or managed product.</li>
+          <li>Financial advice — nothing here says what to buy or sell.</li>
+          <li>A hosted bot — you run it, you own the risk, you hold the keys.</li>
+          <li>Resellable — the license is personal use, no redistribution.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="get">
+  <div class="container pricing">
+    <div>
+      <div class="kicker">Access</div>
+      <h2>One payment.<br>Lifetime repo access.</h2>
+      <p class="lead">Pay in USDC, get invited to the private GitHub repository.
+      Clone it, run the test suite, wire your BalanceManager — you're on the book
+      in an afternoon.</p>
+    </div>
+    <div class="price-card">
+      <div class="amount">$100 <span>USDC</span> <s class="reg">$199</s></div>
+      <div class="per">early access · one-time · private repo invite</div>
+      <ul>
+        <li>Full source + all documentation</li>
+        <li>Every future commit on main</li>
+        <li>Personal-use license</li>
+      </ul>
+      <a class="btn btn-white" href="#" data-open-pay>Connect Wallet &amp; Pay →</a>
+      <p class="alt-pay">or <a href="https://t.me/YOUR_TELEGRAM_HANDLE">message on Telegram</a> to pay manually</p>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="faq">
+  <div class="container">
+    <div class="kicker">FAQ</div>
+    <h2>Straight answers.</h2>
+    <div class="faq" style="margin-top:40px">
+      <details>
+        <summary>Does this bot make money?</summary>
+        <p>No claims are made — and none should be. This kit sells execution
+        infrastructure and implementation know-how for DeepBook V3. The bundled
+        strategies are reference implementations for study and extension, not a
+        promise of profit. Trading digital assets involves real risk of loss.</p>
+      </details>
+      <details>
+        <summary>What do I need to run it?</summary>
+        <p>Node.js 20+, a Sui wallet with a DeepBook V3 BalanceManager object,
+        and a small amount of SUI for gas. A DeepSeek API key and Ollama are
+        optional — the deterministic quant engine runs without any LLM.</p>
+      </details>
+      <details>
+        <summary>How is access delivered?</summary>
+        <p>Connect a Sui wallet (Slush, Sui Wallet, etc.), pay $100 USDC
+        on-chain, then send the transaction digest and your GitHub username
+        via the link shown after payment. Once the payment is verified
+        on-chain, you'll be invited to the private repository — with read
+        access to main, including all documentation and future commits.</p>
+        <p>An automated Telegram bot that verifies the digest and sends the
+        GitHub invite instantly is being rolled out — until then invites are
+        processed manually, usually within 24 hours.</p>
+      </details>
+      <details>
+        <summary>Do early buyers get anything extra?</summary>
+        <p>Yes. Buyers who register their email address (optional — just include
+        it with your digest + GitHub username) get priority invitations and
+        early-access offers when extended editions of the kit are released.
+        Registration is also how you'll hear about major updates pushed to the
+        repo.</p>
+      </details>
+      <details>
+        <summary>Which pools does it trade?</summary>
+        <p>The execution layer is pool-agnostic. The reference config concentrates
+        on SUI/USDC for depth and treats satellite pools (DEEP, WAL, USDSUI, NS)
+        as cleanup targets — a pattern you can extend.</p>
+      </details>
+      <details>
+        <summary>What is the refund policy?</summary>
+        <p>Payments are made on-chain in USDC and cannot be reversed. As this
+        is digital source access delivered in full, <strong>all sales are final
+        — no refunds</strong> once the payment is verified. The only exception
+        is a fault on our side (e.g., payment verified but the repo invite was
+        never delivered). If in doubt, please ask before buying.</p>
+      </details>
+      <details>
+        <summary>Can I redistribute or resell it?</summary>
+        <p>No. The license grants personal use only — use, read, and modify for
+        yourself. Public redistribution and resale are prohibited. See the
+        LICENSE file in the repo.</p>
+      </details>
+      <details>
+        <summary>Is it production-tested?</summary>
+        <p>The codebase is a snapshot of a bot that has run live on Sui mainnet.
+        That said, your environment differs — the README is explicit that live
+        operation is your responsibility. Start small, watch the dashboard,
+        and keep the kill-switch script handy.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <!-- Sui droplet watermark -->
+  <svg class="wm sui" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <!-- DeepBook mark watermark -->
+  <svg class="wm db" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+  <div class="container">
+    <h2>Stop re-solving DeepBook.<br>Start building your edge.</h2>
+    <p>$100 early access (reg. $199) · full source · private repo invite</p>
+    <a class="btn btn-white" href="#" data-open-pay>Connect Wallet &amp; Pay $100</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="#what">The Kit</a>
+        <a href="#inside">What's inside</a>
+        <a href="#get">Get access</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/YOUR_TELEGRAM_HANDLE" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="disclaimer">
+      This software is a development kit and reference implementation. It is not
+      financial advice, not an offer to buy or sell any asset, and makes no
+      representation or guarantee of profit. Automated trading of digital assets
+      involves substantial risk, including loss of capital. You are responsible
+      for your own keys, sizing decisions, and live operation. Past or present
+      operation of the author's instance does not imply future performance.
+      Sui and DeepBook are trademarks of Mysten Labs. This kit is an independent
+      project and is not affiliated with, endorsed, or sponsored by Mysten Labs
+      or the Sui Foundation.
+    </div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUI KIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, send the digest + your <strong>GitHub username</strong> to us on Telegram.
+        We'll verify the payment on-chain and invite you to the private repo.
+        Optionally include your <strong>email</strong> to get priority invites to future editions.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/YOUR_TELEGRAM_HANDLE" target="_blank" rel="noopener">Send on Telegram →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
