@@ -1,0 +1,10 @@
+<iframe id="f" src="/" style="width:390px;height:844px"></iframe>
+<pre id="out"></pre>
+<script>
+const f=document.getElementById('f'),out=document.getElementById('out');
+f.onload=()=>setTimeout(()=>{
+  const d=f.contentWindow.document;
+  const sels=['nav .container','.nav-links','.hero .container','.hero .kicker','.hero h1','.hero p','.hero .cta-row','.price-tag','.strip p','.row','.get'];
+  out.textContent=sels.map(s=>{const el=d.querySelector(s);if(!el)return s+':none';const r=el.getBoundingClientRect();const cs=getComputedStyle(el);return `${s}: w=${r.width.toFixed(0)} l=${r.left.toFixed(0)} r=${r.right.toFixed(0)} ws=${cs.whiteSpace}`;}).join('\n');
+},1200);
+</script>

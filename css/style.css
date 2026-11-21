@@ -241,7 +241,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
   background:var(--ink);border-radius:16px;padding:32px;
   font-family:var(--mono);font-size:13px;line-height:1.9;color:#c8d2ff;
   box-shadow:0 30px 60px rgba(11,14,20,.25);
+  overflow-x:auto;
 }
+.code-frame>div{white-space:nowrap}
+.code-frame .bar{white-space:normal}
 .code-frame .dim{color:#566080}
 .code-frame .ok{color:#7ee2a8}
 .code-frame .bar{
@@ -421,11 +424,21 @@ footer{background:var(--ink);color:#fff;padding:72px 0 40px}
 }
 .nav-links button{border-width:1px}
 
-/* ---------- mobile nav: hide text links, keep CTAs ---------- */
+/* ---------- mobile nav: hide text links, keep lang switcher + CTA ---------- */
 @media(max-width:760px){
-  .nav-links a:not(.btn){display:none}
+  .nav-links>a:not(.btn){display:none}
   .nav-links{gap:10px}
   .btn-nav{padding:8px 14px;font-size:12.5px}
+  .lang-sw{font-size:12px;white-space:nowrap}
+}
+@media(max-width:560px){
+  .cta-price{display:none}
+  .btn-nav{padding:8px 12px;font-size:12px}
+  .nav-links{gap:8px}
+  .logo{font-size:17px}
+  .hero .kicker{font-size:12px;letter-spacing:.12em}
+  .code-frame{font-size:12px;padding:24px}
+  .pay-box{padding:24px}
 }
 
 /* ---------- checkout security note ---------- */
