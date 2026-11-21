@@ -3,9 +3,8 @@
 // verifiable tx digest. Repo invite is completed manually (or by the future
 // backend endpoint) — see the note in the modal footer.
 
-import { SuiClient } from 'https://esm.sh/@mysten/sui@2.37.0/client';
-import { Transaction } from 'https://esm.sh/@mysten/sui@2.37.0/transactions';
-import { getWallets } from 'https://esm.sh/@mysten/wallet-standard@0.19.0';
+import { Transaction } from 'https://esm.sh/@mysten/sui@3.0.1/transactions';
+import { getWallets } from 'https://esm.sh/@wallet-standard/app@1.1.1';
 
 // ---- Config ---------------------------------------------------------------
 const SELLER_ADDRESS = '0x2e1e0fcc8cfe489fd268ab170161684480c2b0152f849a6c54fa1690dffeea97';
@@ -52,7 +51,40 @@ const I18N = {
     },
 }[LANG];
 
-const client = new SuiClient({ url: RPC_URL });
+// Minimal JSON-RPC helper — SDK v3 dropped JSON-RPC support, but the public
+// fullnode endpoint still serves it and it is all we need for reads.
+async function rpc(method, params) {
+    const res = await fetch(RPC_URL, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+    });
+    const json = await res.json();
+    if (json.error) throw new Error(json.error.message);
+    return json.result;
+}
+
+async function getAllUsdcCoins(owner) {
+    const coins = [];
+    let cursor = null;
+    do {
+        const page = await rpc('suix_getCoins', [owner, USDC_TYPE, cursor, 50]);
+        coins.push(...(page?.data || []));
+        cursor = page?.hasNextPage ? page.nextCursor : null;
+    } while (cursor);
+    return coins;
+}
+
+async function waitForTx(digest, tries = 8) {
+    for (let i = 0; i < tries; i++) {
+        try {
+            const tx = await rpc('sui_getTransactionBlock', [digest, { showEffects: true }]);
+            if (tx) return tx;
+        } catch { /* not indexed yet */ }
+        await new Promise((r) => setTimeout(r, 1500));
+    }
+    return null;
+}
 
 const $ = (id) => document.getElementById(id);
 const modal = $('pay-modal');
@@ -130,7 +162,7 @@ async function pay() {
         const owner = account.address;
         const amount = BigInt(PRICE_USDC) * 10n ** BigInt(USDC_DECIMALS);
 
-        const { data: coins } = await client.getCoins({ owner, coinType: USDC_TYPE });
+        const coins = await getAllUsdcCoins(owner);
         const total = coins.reduce((s, c) => s + BigInt(c.balance), 0n);
         if (total < amount) {
             throw new Error(I18N.insufficient(PRICE_USDC, (Number(total) / 10 ** USDC_DECIMALS).toFixed(2)));
@@ -156,7 +188,7 @@ async function pay() {
         const digest = result?.digest || result?.effects?.transactionDigest;
         if (!digest) throw new Error(I18N.noDigest);
 
-        try { await client.waitForTransaction({ digest }); } catch { /* show digest anyway */ }
+        try { await waitForTx(digest); } catch { /* show digest anyway */ }
 
         $('pay-digest').textContent = digest;
         $('suiscan-link').href = `https://suiscan.xyz/mainnet/tx/${digest}`;
