@@ -278,6 +278,7 @@ function copyDigest() {
 
 function updateNavConnect() {
     const btn = $('nav-connect');
+    if (!btn) return;
     if (account) {
         btn.textContent = short(account.address);
         btn.title = `${account.address} — click to disconnect`;
@@ -298,7 +299,7 @@ function disconnect() {
 }
 
 export function initCheckout() {
-    $('nav-connect').addEventListener('click', () => {
+    $('nav-connect')?.addEventListener('click', () => {
         if (account) { disconnect(); return; }
         modal.classList.add('open');
         show('wallets');
