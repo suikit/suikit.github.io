@@ -23,6 +23,7 @@ const I18N = {
     ko: {
         noWallet1: '이 브라우저에서 Sui 월렛이 감지되지 않았습니다.',
         noWallet2: '설치 후 이 창을 다시 여세요.',
+        noWalletMobile: '모바일에서는 월렛 앱(Slush / Trust Wallet)의 내장 브라우저에서 이 페이지를 여세요. 또는',
         waiting: '월렛을 기다리는 중…',
         copied: '복사됨', copy: '복사',
         noAccounts: '월렛에서 Sui 계정을 찾지 못했습니다.',
@@ -37,6 +38,7 @@ const I18N = {
     en: {
         noWallet1: 'No Sui wallet detected in this browser.',
         noWallet2: 'then reopen this dialog.',
+        noWalletMobile: 'On mobile, open this page inside your wallet app’s browser (Slush / Trust Wallet). Or',
         waiting: 'Waiting for wallet…',
         copied: 'copied', copy: 'copy',
         noAccounts: 'No Sui account found in the wallet.',
@@ -51,6 +53,7 @@ const I18N = {
     pt: {
         noWallet1: 'Nenhuma carteira Sui detectada neste navegador.',
         noWallet2: 'depois reabra esta janela.',
+        noWalletMobile: 'No celular, abra esta página no navegador interno do app da carteira (Slush / Trust Wallet). Ou',
         waiting: 'Aguardando a carteira…',
         copied: 'copiado', copy: 'copiar',
         noAccounts: 'Nenhuma conta Sui encontrada na carteira.',
@@ -212,8 +215,11 @@ async function renderWalletList() {
     const registry = getWallets();
     const found = usableSuiWallets();
     if (!found.length) {
-        list.innerHTML = `
-            <p class="muted">${I18N.noWallet1}</p>
+        const mobile = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+        list.innerHTML = mobile
+            ? `<p class="muted">${I18N.noWalletMobile}
+            <a href="${TELEGRAM_URL}" target="_blank" rel="noopener">pay manually via Telegram</a>.</p>`
+            : `<p class="muted">${I18N.noWallet1}</p>
             <p class="muted">Install <a href="https://slush.app" target="_blank" rel="noopener">Slush</a>
             or <a href="https://suiwallet.com" target="_blank" rel="noopener">Sui Wallet</a>, ${I18N.noWallet2}</p>`;
         return;
