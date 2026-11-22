@@ -14,6 +14,14 @@
 - Sold as source code + documentation. Not a profit machine, not a signal
   service, not a managed product.
 
+## Why it exists
+
+AI codegen can draft a bot in a weekend, but months of on-chain debugging —
+locked balances, abort codes, stale prices, gas edge cases — is what turns a
+draft into something that survives live markets. This kit is that time already
+spent: feed the repo to an AI agent and it builds on working, commented
+reference code instead of guesses.
+
 ## Pages
 
 - [Home (EN)](https://suikit.dev/) — overview, pricing, FAQ
@@ -31,4 +39,4 @@
 - Payments: USDC on Sui mainnet; all sales final (no refunds)
 - Independence: not affiliated with, endorsed, or sponsored by Mysten Labs
   or the Sui Foundation
-- Contact: Telegram bot @sui_kit_bot
+- Contact: Telegram bot @sui_kit_bot · contact@suikit.dev
