@@ -19,4 +19,14 @@
   <url>
     <loc>https://suikit.dev/legal.pt.html</loc>
   </url>
+  <url>
+    <loc>https://suikit.dev/index.ko.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://suikit.dev/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://suikit.dev/index.pt.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://suikit.dev/"/>
+  </url>
+  <url>
+    <loc>https://suikit.dev/legal.ko.html</loc>
+  </url>
 </urlset>

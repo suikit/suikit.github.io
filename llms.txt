@@ -18,8 +18,10 @@
 
 - [Home (EN)](https://suikit.dev/) — overview, pricing, FAQ
 - [Home (PT)](https://suikit.dev/index.pt.html)
+- [Home (KO)](https://suikit.dev/index.ko.html)
 - [Terms & Privacy (EN)](https://suikit.dev/legal.html)
 - [Termos & Privacidade (PT)](https://suikit.dev/legal.pt.html)
+- [약관 & 개인정보 (KO)](https://suikit.dev/legal.ko.html)
 
 ## Facts
 

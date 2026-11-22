@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuiKit — DeepBook V3 봇 개발 키트 · $100 USDC</title>
+<meta name="description" content="DeepBook V3(Sui)용 프로덕션급 봇 개발 키트. 실행 인프라, 결정론적 퀀트 레이어, 운영 툴링 — 소스로 판매, 시그널이 아닙니다.">
+<!-- OGP / social preview -->
+<meta property="og:title" content="SuiKit — DeepBook V3 봇 개발 키트">
+<meta property="og:description" content="DeepBook V3 실행 인프라 + 퀀트 의사결정 레이어 + 운영 툴링. $100 USDC · 소스 액세스.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://suikit.dev/index.ko.html">
+<meta property="og:url" content="https://suikit.dev/index.ko.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SuiKit — DeepBook V3 봇 개발 키트">
+<meta name="twitter:description" content="DeepBook V3 실행 인프라 + 퀀트 의사결정 레이어 + 운영 툴링. $100 USDC · 소스 액세스.">
+<meta name="twitter:image" content="https://suikit.dev/og.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="https://suikit.dev/">
+<link rel="alternate" hreflang="pt" href="https://suikit.dev/index.pt.html">
+<link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html">
+<link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://suikit.dev/#website",
+      "url": "https://suikit.dev/",
+      "name": "SuiKit",
+      "inLanguage": ["ko"]
+    },
+    {
+      "@type": "Product",
+      "name": "Sui DeepBook V3 봇 키트",
+      "description": "DeepBook V3(Sui) 트레이딩 봇 개발 키트: 실행 엔진, 결정론적 퀀트 의사결정 레이어, 운영 툴링 — 소스 코드로 판매.",
+      "url": "https://suikit.dev/",
+      "image": "https://suikit.dev/og.png",
+      "brand": { "@type": "Brand", "name": "Sui Kit" },
+      "offers": {
+        "@type": "Offer",
+        "price": "100",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://suikit.dev/"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "이 봇은 돈을 벌어주나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "수익 약속은 없습니다. 이 키트는 DeepBook V3용 실행 인프라와 구현 노하우를 판매하며, 포함된 전략은 연구·확장용 레퍼런스입니다." } },
+        { "@type": "Question", "name": "실행에 필요한 것은?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Node.js 20+, DeepBook V3 BalanceManager 오브젝트가 있는 Sui 월렛, gas용 소량의 SUI. LLM 연동은 선택 사항입니다." } },
+        { "@type": "Question", "name": "액세스는 어떻게 전달되나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "$100 USDC를 온체인으로 결제하면, 결제 확인 후 비공개 GitHub 리포지토리에 초대됩니다." } },
+        { "@type": "Question", "name": "어떤 풀에서 거래하나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "실행 레이어는 풀에 구애받지 않습니다. 레퍼런스 설정은 SUI/USDC에 집중하고 서브 풀은 정리 대상으로 다룹니다." } },
+        { "@type": "Question", "name": "환불 정책은?",
+          "acceptedAnswer": { "@type": "Answer", "text": "결제는 온체인 USDC로 이루어지며 취소할 수 없습니다. 결제 확인 후에는 환불되지 않습니다." } },
+        { "@type": "Question", "name": "재배포하거나 재판매할 수 있나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "안 됩니다. 라이선스는 개인 사용 전용이며 공개 재배포와 재판매는 금지됩니다." } },
+        { "@type": "Question", "name": "프로덕션에서 검증됐나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "이 코드베이스는 Sui 메인넷에서 실제로 동작한 봇의 스냅샷입니다. 귀하의 환경에서의 실전 운영은 본인 책임입니다." } },
+        { "@type": "Question", "name": "Mysten Labs나 Sui Foundation과 관련이 있나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "없습니다. 독립 프로젝트이며 Mysten Labs 또는 Sui Foundation과 제휴·보증·후원 관계가 없습니다." } }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">Sui<span>Kit</span></div>
+    <div class="nav-links">
+      <a href="#what">키트</a>
+      <a href="#inside">구성</a>
+      <a href="#faq">FAQ</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="index.html">EN</option><option value="index.pt.html">PT</option><option value="index.ko.html" selected>KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <!-- Sui droplet watermark -->
+  <svg class="wm sui" data-plx="0.38" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <!-- DeepBook mark watermark -->
+  <svg class="wm db" data-plx="-0.42" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
+  <div class="container">
+    <div>
+      <div class="kicker">Sui · DeepBook V3 · 소스 공개 키트</div>
+      <h1>오더북 위에서<br>돌아가는 봇을<br>직접 만드세요.</h1>
+      <p>DeepBook V3용 프로덕션급 개발 키트 — 실제 BalanceManager 실행, 결정론적 퀀트 레이어, 운영 툴링까지. 소스는 당신의 것, 엣지는 당신이 만듭니다.</p>
+      <div class="cta-row">
+        <a href="#" class="btn btn-white" data-open-pay>월렛 연결 &amp; 결제</a>
+        <span class="price-tag">$100 얼리 액세스 · 정가 $199 · repo 초대</span>
+      </div>
+    </div>
+    <div class="dash-wrap" data-plx="-0.07">
+    <div class="dash">
+      <div class="bar"><i></i><i></i><i></i><span class="title">sui-kit · 대시보드</span><span class="live">LIVE</span></div>
+      <div class="body">
+        <div class="stats">
+          <span class="lbl">NET ASSET VALUE</span>
+          <span class="val">$42,318.60</span>
+          <span class="chg">+6.8% 7d</span>
+          <span class="mini">SUI/USDC<br><b>open orders 4</b></span>
+        </div>
+        <div class="chart">
+        <svg viewBox="0 0 400 110" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="navfill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7ee2a8" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#7ee2a8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(150,170,255,.09)" stroke-width="1">
+            <line x1="0" y1="20" x2="400" y2="20"/><line x1="0" y1="45" x2="400" y2="45"/>
+            <line x1="0" y1="70" x2="400" y2="70"/><line x1="0" y1="95" x2="400" y2="95"/>
+          </g>
+          <path d="M0,78 L30,72 L60,80 L90,62 L120,68 L150,54 L180,60 L210,46 L240,52 L270,38 L300,44 L330,30 L360,36 L400,20 L400,110 L0,110 Z" fill="url(#navfill)"/>
+          <path d="M0,78 L30,72 L60,80 L90,62 L120,68 L150,54 L180,60 L210,46 L240,52 L270,38 L300,44 L330,30 L360,36 L400,20" fill="none" stroke="#7ee2a8" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="400" cy="20" r="3.5" fill="#7ee2a8"/>
+          <circle cx="400" cy="20" r="8" fill="none" stroke="#7ee2a8" stroke-opacity=".4"/>
+        </svg>
+        </div>
+        <div class="book">
+          <div class="bkhead"><span>side</span><span>depth</span><span style="text-align:right">price</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:38%"></div><span class="px">0.7841</span></div>
+          <div class="bkrow"><span class="side ask">SELL</span><div class="depth ask" style="width:24%"></div><span class="px">0.7830</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:55%"></div><span class="px">0.7808</span></div>
+          <div class="bkrow"><span class="side bid">BUY</span><div class="depth bid" style="width:31%"></div><span class="px">0.7795</span></div>
+        </div>
+        <div class="foot">
+          <span class="pill hold">HOLD</span>
+          <span class="pill ok">QUANT ENGINE</span>
+          <span class="pill dim">VOLATILITY_HARVEST</span>
+          <span class="dim">DeepBook V3 · gRPC</span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</header>
+
+<section class="strip">
+  <div class="container">
+    <p>이것은 수익 기계가 아닙니다. 이것은 <em>실행 인프라</em> — 온체인 봇에서 모두가 틀리는, 화려하지 않은 80% — 이미 만들어지고, 연결되고, 동작 중입니다.</p>
+  </div>
+</section>
+
+<section class="section" id="what">
+  <div class="container">
+    <div class="kicker">개요</div>
+    <h2>하나의 키트, 제대로 갖추는 데 몇 달이 걸린 세 개의 레이어.</h2>
+    <p class="lead">DeepBook V3는 실제로 붙여보기 전까지는 단순해 보입니다. 이 키트는 메인넷에서 실제로 거래한 봇의 검증된 골격입니다 — 서비스나 시그널이 아닌, 소스 코드와 문서로 판매합니다.</p>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>실행 엔진</h3>
+        <p>BalanceManager 라이프사이클(free / locked / settled), 원자적 cancel+place 트랜잭션, MoveAbort&nbsp;code&nbsp;3 대응, gas 리저브 로직 — 문서에는 나오지 않는 부분들입니다.</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>의사결정 레이어</h3>
+        <p>결정론적 5단계 퀀트 판단 + 선택적 DeepSeek 오버레이 하나. 데이터가 없을 때 LLM이 북을 건드리지 않습니다 — 주문은 그대로 유지됩니다.</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>운영 툴링</h3>
+        <p>라이브 HTML 대시보드, Telegram 알림 &amp; 제어, 체결 감지, 원가 추적, 에러 워처, 정체 모니터링까지 기본 제공.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="inside">
+  <svg class="wm sui" data-plx="0.3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <svg class="wm db" data-plx="-0.26" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
+  <div class="container">
+    <div class="kicker">repo 내부</div>
+    <h2>엣지 케이스가 곧 제품입니다.</h2>
+
+    <div class="rows">
+      <div class="row">
+        <div class="n">01</div>
+        <h3>잔액 라이프사이클, 제대로</h3>
+        <p>풀별 free vs locked vs settled 잔액을 추적하고, 온체인 상태와 동기화하고, 오픈 주문과 정합성을 맞춥니다 — 봇이 없는 돈으로 주문하는 일이 없도록.</p>
+      </div>
+      <div class="row">
+        <div class="n">02</div>
+        <h3>MoveAbort code&nbsp;3 회피</h3>
+        <p>부족하거나 잠긴 DEEP 수수료 잔액을 자동 감지하고 전환
+        <code>pay_with_deep=false</code> — DeepBook V3 주문에서 가장 흔한 조용한 실패입니다.</p>
+      </div>
+      <div class="row">
+        <div class="n">03</div>
+        <h3>원자적 주문 관리</h3>
+        <p>취소와 발주를 하나의 트랜잭션으로. 주문 TTL 7일 주기 재연장. 오래된 가격 필터링. 서브 풀 정리. 전부 배선되어 있고 전부 주석 처리되어 있습니다.</p>
+      </div>
+      <div class="row">
+        <div class="n">04</div>
+        <h3>gRPC 네이티브 클라이언트</h3>
+        <p>Sui gRPC 직접 연결 + 구 JSON-RPC 인터페이스를 미러링하는 호환 레이어 — deprecated 엔드포인트도, 재작성도 없습니다.</p>
+      </div>
+      <div class="row">
+        <div class="n">05</div>
+        <h3>체결 &amp; 원가 추적</h3>
+        <p>체결 감지, 원가 유지, 재시작 간 trailing 상태와 hold 벤치마크 추적 유지 — 모든 전략에 필요하지만 아무도 쓰고 싶어하지 않는 장부 처리입니다.</p>
+      </div>
+      <div class="row">
+        <div class="n">06</div>
+        <h3>기본값으로 안전</h3>
+        <p>가격 데이터가 없으면 봇은 기존 지정가를 유지한 채 아무것도 하지 않습니다. 중복 인스턴스 잠금, 쿨다운, 일일 상한, 연속 손실 브레이크 내장.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="get">
+      <div>
+        <div class="kicker">포함 내용</div>
+        <h2>전체 소스. 진짜 문서. 블랙박스 없음.</h2>
+        <ul>
+          <li>전체 Node.js 코드베이스(약 10k LOC), 전 구간 영어 주석</li>
+          <li>아키텍처 문서, 전략 명세, 주석 달린 <code>.env.example</code></li>
+          <li>레퍼런스 전략: 변동성 하베스트 래더, 스나이퍼, 추세 추종</li>
+          <li>연구 비교용 Python 섀도 커미티(선택 사항)</li>
+          <li>스크립트: balance-manager 인스펙터, gRPC 검증기, 킬 스위치</li>
+          <li>개인 사용 라이선스 — 실행하고, 읽고, 수정하세요</li>
+        </ul>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div><span class="dim">$</span> npm ci && npm test</div>
+        <div><span class="ok"># tests 31 · pass 31</span></div>
+        <div><span class="dim">$</span> cp .env.example .env</div>
+        <div><span class="dim"># set SUI_PRIVATE_KEY, BALANCE_MANAGER_ID</span></div>
+        <div><span class="dim">$</span> node scripts/verify_grpc.mjs</div>
+        <div><span class="ok"># gRPC connected · manager found</span></div>
+        <div><span class="dim">$</span> npm start</div>
+        <div><span class="ok"># bot_deepbook → DeepBook V3 · SUI/USDC</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="kicker">적합성 체크</div>
+    <h2>무엇을 사는지 알고 구매하세요.</h2>
+    <div class="who">
+      <div class="panel yes">
+        <h3>이런 분께 적합합니다…</h3>
+        <ul>
+          <li>JavaScript를 작성할 줄 알고, 모든 엣지 케이스를 직접 재발견하지 않고 DeepBook V3에서 빌드하고 싶은 분.</li>
+          <li>백서가 아니라 동작하는 BalanceManager 실행 레퍼런스를 원하는 분.</li>
+          <li>검증된 플러밍 위에 자신만의 전략을 쓸 계획인 분.</li>
+          <li>자체 인프라로 운영하며 키, 사이즈, 게이트를 완전히 통제하고 싶은 분.</li>
+        </ul>
+      </div>
+      <div class="panel no">
+        <h3>이 키트는 아닙니다…</h3>
+        <ul>
+          <li>수익성 있는 트레이딩 시스템, 시그널 서비스, 운용 상품이 아닙니다.</li>
+          <li>금융 조언이 아닙니다 — 무엇을 사고팔지는 여기에 없습니다.</li>
+          <li>호스티드 봇이 아닙니다 — 실행도, 리스크도, 키도 당신의 것입니다.</li>
+          <li>재판매 불가 — 라이선스는 개인 사용이며 재배포는 금지됩니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="why">
+  <div class="container">
+    <div class="kicker">왜 이 키트인가</div>
+    <h2>AI는 봇을 써줍니다.<br>하지만 튜닝 비용은 남습니다.</h2>
+    <p class="lead">코드 생성은 주말이면 초안을 줍니다. 하지만 줄 수 없는 것이 있습니다 — 초안을 실전 시장에서 살아남는 봇으로 바꾸는 수개월의 온체인 디버깅. 잠긴 잔액, abort 코드, 오래된 가격, gas 엣지 케이스. 이 키트는 이미 지불된 그 시간입니다.</p>
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-label">처음부터<span>AI 코드 생성을 써도</span></div>
+        <div class="tl-bar">
+          <div class="tl-seg gen" style="flex:0 0 16%"><b>생성</b><i>약 1주</i></div>
+          <div class="tl-seg tune" style="flex:1"><b>온체인 디버깅 &amp; 튜닝</b><i>3–6개월</i></div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">SUIKIT 사용 시</div>
+        <div class="tl-bar">
+          <div class="tl-seg adapt" style="flex:0 0 34%"><b>읽고 적응</b><i>며칠</i></div>
+          <div class="tl-seg live" style="flex:1"><b>북에서 라이브</b><i>약 1–2주</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="get">
+  <div class="container pricing">
+    <div>
+      <div class="kicker">액세스</div>
+      <h2>한 번의 결제.<br>평생 repo 액세스.</h2>
+      <p class="lead">USDC로 결제하면 비공개 GitHub 리포지토리에 초대됩니다. 클론하고, 테스트를 돌리고, BalanceManager를 연결하세요 — 오후면 북에 올라갑니다.</p>
+    </div>
+    <div class="price-card">
+      <div class="amount">$100 <span>USDC</span> <s class="reg">$199</s></div>
+      <div class="per">얼리 액세스 · 1회 결제 · 비공개 repo 초대</div>
+      <ul>
+        <li>전체 소스 + 모든 문서</li>
+        <li>main의 모든 향후 커밋</li>
+        <li>개인 사용 라이선스</li>
+      </ul>
+      <a class="btn btn-white" href="#" data-open-pay>월렛 연결 &amp; 결제 →</a>
+      <p class="alt-pay">또는 <a href="https://t.me/sui_kit_bot">Telegram으로 문의</a>하여 수동 결제</p>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="faq">
+  <div class="container">
+    <div class="kicker">FAQ</div>
+    <h2>솔직한 답변.</h2>
+    <div class="faq" style="margin-top:40px">
+      <details>
+        <summary>이 봇은 돈을 벌어주나요?</summary>
+        <p>그런 주장은 하지 않습니다 — 할 수도 없습니다. 이 키트는 DeepBook V3용 실행 인프라와 구현 노하우를 판매합니다. 포함된 전략은 연구와 확장을 위한 레퍼런스 구현이며 수익 약속이 아닙니다. 디지털 자산 거래에는 실제 손실 위험이 있습니다.</p>
+      </details>
+      <details>
+        <summary>실행에 필요한 것은?</summary>
+        <p>Node.js 20+, DeepBook V3 BalanceManager 오브젝트가 있는 Sui 월렛, gas용 소량의 SUI. DeepSeek API 키와 Ollama는 선택 사항 — 결정론적 퀀트 엔진은 LLM 없이 동작합니다.</p>
+      </details>
+      <details>
+        <summary>액세스는 어떻게 전달되나요?</summary>
+        <p>Sui 월렛(Slush, Sui Wallet 등)을 연결하고 온체인으로 $100 USDC를 결제한 뒤, 결제 후 표시되는 링크로 트랜잭션 digest와 GitHub 사용자명을 보내세요. 결제가 온체인에서 확인되면 비공개 리포지토리에 초대됩니다 — main 읽기 권한, 모든 문서와 향후 커밋 포함.</p>
+        <p>digest를 검증하고 GitHub 초대를 즉시 보내는 자동화 Telegram 봇이 도입 중입니다 — 그 전까지는 수동으로 처리되며 보통 24시간 이내입니다.</p>
+      </details>
+      <details>
+        <summary>얼리 구매자에게 추가 혜택이 있나요?</summary>
+        <p>네. 이메일 주소를 등록한 구매자(선택 사항 — digest + GitHub 사용자명과 함께 보내기만 하면 됩니다)는 우선 초대와, 확장 에디션 출시 시 얼리 액세스 혜택을 받습니다. 등록은 repo의 주요 업데이트 소식을 받는 방법이기도 합니다.</p>
+      </details>
+      <details>
+        <summary>어떤 풀에서 거래하나요?</summary>
+        <p>실행 레이어는 풀에 구애받지 않습니다. 레퍼런스 설정은 깊이를 위해 SUI/USDC에 집중하고 서브 풀(DEEP, WAL, USDSUI, NS)은 정리 대상으로 다룹니다 — 확장 가능한 패턴입니다.</p>
+      </details>
+      <details>
+        <summary>환불 정책은?</summary>
+        <p>결제는 온체인 USDC로 이루어지며 취소할 수 없습니다. 전부 전달되는 디지털 소스 액세스이므로, <strong>모든 판매는 최종이며 환불 불가</strong> 입니다 — 결제 확인 후. 유일한 예외는 저희 측 과실(예: 결제는 확인됐으나 repo 초대가 전달되지 않은 경우)뿐입니다. 궁금한 점은 구매 전에 문의하세요.</p>
+      </details>
+      <details>
+        <summary>재배포하거나 재판매할 수 있나요?</summary>
+        <p>안 됩니다. 라이선스는 개인 사용만 허가합니다 — 본인을 위한 사용, 열람, 수정. 공개 재배포와 재판매는 금지됩니다. repo의 LICENSE 파일을 참조하세요.</p>
+      </details>
+      <details>
+        <summary>프로덕션에서 검증됐나요?</summary>
+        <p>이 코드베이스는 Sui 메인넷에서 실제로 동작한 봇의 스냅샷입니다. 다만 환경은 다릅니다 — README에도 실전 운영은 본인 책임임이 명시되어 있습니다. 작게 시작하고, 대시보드를 보고, 킬 스위치 스크립트를 준비하세요.</p>
+      </details>
+      <details>
+        <summary>어떤 네트워크와 자산을 받나요?</summary>
+        <p>USDC, <strong>Sui 메인넷만</strong> 지원. 체크아웃은 월렛에서 판매자의 Sui 주소로 정확히 $100 USDC를 전송하는 하나의 트랜잭션에 서명합니다 — 다른 체인이나 토큰은 지원하지 않습니다.</p>
+      </details>
+      <details>
+        <summary>왜 구독이 아니라 일회 결제인가요?</summary>
+        <p>더 낮은 가격으로 더 많은 빌더에게 닿고 싶기 때문입니다. $100 한 번의 결제로 개인에게 키트를 접근 가능하게 유지하고, main의 모든 향후 커밋까지 포함됩니다 — 월정액도, 등급 제한도 없습니다.</p>
+      </details>
+      <details>
+        <summary>Sui 또는 DeepBook의 공식 제품인가요?</summary>
+        <p>아닙니다. SuiKit은 독립 프로젝트이며 Mysten Labs, Sui Foundation, DeepBook과 제휴·보증·후원 관계가 없습니다. Sui와 DeepBook은 각 소유자의 상표이며, 여기서의 언급은 설명 목적일 뿐입니다.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <!-- Sui droplet watermark -->
+  <svg class="wm sui" data-plx="0.38" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <!-- DeepBook mark watermark -->
+  <svg class="wm db" data-plx="-0.34" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
+  <div class="container">
+    <h2>DeepBook를 다시 풀지 마세요.<br>당신의 엣지를 만드세요.</h2>
+    <p>$100 얼리 액세스(정가 $199) · 전체 소스 · 비공개 repo 초대</p>
+    <a class="btn btn-white" href="#" data-open-pay>월렛 연결 &amp; $100 결제</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="#what">키트</a>
+        <a href="#inside">구성 내용</a>
+        <a href="#get">액세스 받기</a>
+      </div>
+      <div>
+        <h4>프로토콜</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>네트워크</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>법적 고지</h4>
+        <a href="legal.html">약관 &amp; 개인정보</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · 비공개 repo 액세스</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">계속하려면 Sui 월렛을 선택하세요.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">결제 계정 <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">한 건의 트랜잭션에 서명합니다: <strong>$100 USDC → 판매자</strong>. gas는 평소처럼 월렛의 SUI로 지불됩니다.</p>
+      <button class="btn btn-ink" id="pay-btn">$100 USDC 결제</button>
+      <p class="sec-note">🔒 서명은 이 USDC 전송에만 적용됩니다.<br>시드 문구는 절대 공유하지 마세요 — 저희는 요구하지 않습니다.</p>
+      <button class="link-btn" id="pay-back">← 다른 월렛 선택</button>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>결제가 전송되었습니다.</strong></p>
+      <p class="muted small">트랜잭션 digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">복사</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">suiscan에서 보기 ↗</a>
+      </div>
+      <div class="done-note">
+        <p>액세스를 완료하려면 Telegram 봇을 여세요 — digest가 자동으로 첨부됩니다. 결제를 검증한 뒤
+        <strong>GitHub 사용자명</strong> (선택적으로 <strong>이메일</strong>
+        도 함께 — 우선 초대용)을 물어봅니다. 봇이 아직 응답하지 않아도 메시지는 저희에게 도달합니다 — 초대는 24시간 이내에 수동 처리됩니다.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram 봇 열기 →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>문제가 발생했습니다</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">다시 시도</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">연결됨: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-연결 해제">연결 해제</button>
+    </div>
+    <p class="pay-foot">결제는 판매자 주소로 온체인 정산됩니다. 커스터디도, 카드 데이터도 없습니다. 서명을 요청하는 것은 USDC 전송뿐 — 시드 문구나 개인키는 절대 요구하지 않습니다.</p>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

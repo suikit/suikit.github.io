@@ -23,6 +23,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="alternate" hreflang="en" href="https://suikit.dev/">
 <link rel="alternate" hreflang="pt" href="https://suikit.dev/index.pt.html">
+<link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html">
 <link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
@@ -34,7 +35,7 @@
       "@id": "https://suikit.dev/#website",
       "url": "https://suikit.dev/",
       "name": "Sui Kit",
-      "inLanguage": ["en", "pt-BR"]
+      "inLanguage": ["en", "pt-BR", "ko"]
     },
     {
       "@type": "Product",
@@ -85,7 +86,7 @@
       <a href="#what">The Kit</a>
       <a href="#inside">Inside</a>
       <a href="#faq">FAQ</a>
-      <span class="lang-sw"><strong>EN</strong> · <a href="index.pt.html">PT</a></span>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="index.html" selected>EN</option><option value="index.pt.html">PT</option><option value="index.ko.html">KO</option></select>
       <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
     </div>
   </div>
@@ -95,7 +96,7 @@
   <!-- Sui droplet watermark -->
   <svg class="wm sui" data-plx="0.38" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
   <!-- DeepBook mark watermark -->
-  <svg class="wm db" data-plx="-0.42" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+  <svg class="wm db" data-plx="-0.42" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">
     <div>
       <div class="kicker">Sui · DeepBook V3 · Source-available kit</div>
@@ -197,7 +198,7 @@
 
 <section class="section alt" id="inside">
   <svg class="wm sui" data-plx="0.3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
-  <svg class="wm db" data-plx="-0.26" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+  <svg class="wm db" data-plx="-0.26" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">
     <div class="kicker">Inside the repo</div>
     <h2>The edge cases are the product.</h2>
@@ -305,6 +306,34 @@
   </div>
 </section>
 
+
+<section class="section" id="why">
+  <div class="container">
+    <div class="kicker">Why this kit</div>
+    <h2>AI can write the bot.<br>You still pay for the tuning.</h2>
+    <p class="lead">Code generation gets you a draft in a weekend. What it can't
+    give you is the months of on-chain debugging that turn a draft into a bot
+    that survives live markets — locked balances, abort codes, stale prices,
+    gas edge cases. This kit is that time, already spent.</p>
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-label">FROM SCRATCH<span>even with AI codegen</span></div>
+        <div class="tl-bar">
+          <div class="tl-seg gen" style="flex:0 0 16%"><b>generate</b><i>~1 week</i></div>
+          <div class="tl-seg tune" style="flex:1"><b>debug &amp; tune on-chain</b><i>3–6 months</i></div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">WITH SUIKIT</div>
+        <div class="tl-bar">
+          <div class="tl-seg adapt" style="flex:0 0 34%"><b>read &amp; adapt</b><i>days</i></div>
+          <div class="tl-seg live" style="flex:1"><b>live on the book</b><i>~1–2 weeks</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="get">
   <div class="container pricing">
     <div>
@@ -392,6 +421,25 @@
         operation is your responsibility. Start small, watch the dashboard,
         and keep the kill-switch script handy.</p>
       </details>
+      <details>
+        <summary>Which network and asset do you accept?</summary>
+        <p>USDC on <strong>Sui mainnet only</strong>. The checkout signs a single
+        transaction that transfers exactly $100 USDC from your wallet to the
+        seller's Sui address — no other chains or tokens are supported.</p>
+      </details>
+      <details>
+        <summary>Why a one-time payment, not a subscription?</summary>
+        <p>Because we'd rather reach more builders at a lower price. A single
+        $100 payment keeps the kit accessible to individuals, and it includes
+        every future commit on main — no monthly drip, no tier gates.</p>
+      </details>
+      <details>
+        <summary>Is this an official Sui or DeepBook product?</summary>
+        <p>No. SuiKit is an independent project and is not affiliated with,
+        endorsed, or sponsored by Mysten Labs, the Sui Foundation, or DeepBook.
+        Sui and DeepBook are trademarks of their respective owners; references
+        here are descriptive only.</p>
+      </details>
     </div>
   </div>
 </section>
@@ -400,7 +448,7 @@
   <!-- Sui droplet watermark -->
   <svg class="wm sui" data-plx="0.38" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
   <!-- DeepBook mark watermark -->
-  <svg class="wm db" data-plx="-0.34" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M0 1h18a11 11 0 0 1 10.95 10H0V1Zm0 12h28.95A11 11 0 0 1 18 23H0V13Z" transform="translate(0 -1) scale(1 .96)"/></svg>
+  <svg class="wm db" data-plx="-0.34" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">
     <h2>Stop re-solving DeepBook.<br>Start building your edge.</h2>
     <p>$100 early access (reg. $199) · full source · private repo invite</p>
@@ -436,17 +484,7 @@
         <a href="legal.html">Terms &amp; Privacy</a>
       </div>
     </div>
-    <div class="disclaimer">
-      This software is a development kit and reference implementation. It is not
-      financial advice, not an offer to buy or sell any asset, and makes no
-      representation or guarantee of profit. Automated trading of digital assets
-      involves substantial risk, including loss of capital. You are responsible
-      for your own keys, sizing decisions, and live operation. Past or present
-      operation of the author's instance does not imply future performance.
-      Sui and DeepBook are trademarks of Mysten Labs. This kit is an independent
-      project and is not affiliated with, endorsed, or sponsored by Mysten Labs
-      or the Sui Foundation.
-    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
   </div>
 </footer>
 

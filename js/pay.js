@@ -17,8 +17,23 @@ const RPC_URL = 'https://fullnode.mainnet.sui.io:443';
 const TELEGRAM_URL = 'https://t.me/sui_kit_bot';
 // ---------------------------------------------------------------------------
 
-const LANG = (document.documentElement.lang || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+const _lang = (document.documentElement.lang || 'en').toLowerCase();
+const LANG = _lang.startsWith('pt') ? 'pt' : _lang.startsWith('ko') ? 'ko' : 'en';
 const I18N = {
+    ko: {
+        noWallet1: '이 브라우저에서 Sui 월렛이 감지되지 않았습니다.',
+        noWallet2: '설치 후 이 창을 다시 여세요.',
+        waiting: '월렛을 기다리는 중…',
+        copied: '복사됨', copy: '복사',
+        noAccounts: '월렛에서 Sui 계정을 찾지 못했습니다.',
+        connectCancelled: '월렛 연결이 취소되었습니다.',
+        noSeller: '판매자 주소가 아직 설정되지 않았습니다.',
+        insufficient: (need, have) => `USDC 부족 — ${need} USDC 필요, 월렛 잔액 ${have}.`,
+        noSign: (w) => `${w}은(는) 트랜잭션 서명을 지원하지 않습니다.`,
+        noDigest: '트랜잭션은 서명됐지만 digest가 반환되지 않았습니다.',
+        payFailed: '결제가 실패했거나 거부되었습니다.',
+        payBtn: '$100 USDC 결제',
+    },
     en: {
         noWallet1: 'No Sui wallet detected in this browser.',
         noWallet2: 'then reopen this dialog.',
@@ -176,11 +191,26 @@ function fail(msg) {
     show('error');
 }
 
+// Keep only wallets that can actually sign Sui transactions: a sui:* feature
+// or a known Sui-capable name. Also dedupe by display name (some extensions
+// register twice under the standard).
+const SUI_WALLET_NAMES = /slush|sui wallet|suiet|nightly|trust|backpack|martian|surf|okx|onekey|bitget|phantom|glass|morphis|elli|tokenpocket/i;
+function usableSuiWallets() {
+    const seen = new Set();
+    return getWallets().get().filter((w) => {
+        const ok = Object.keys(w.features).some((f) => f.startsWith('sui:'))
+            || SUI_WALLET_NAMES.test(w.name);
+        if (!ok || seen.has(w.name)) return false;
+        seen.add(w.name);
+        return true;
+    });
+}
+
 async function renderWalletList() {
     const list = $('wallet-list');
     list.innerHTML = '';
     const registry = getWallets();
-    const found = registry.get();
+    const found = usableSuiWallets();
     if (!found.length) {
         list.innerHTML = `
             <p class="muted">${I18N.noWallet1}</p>
