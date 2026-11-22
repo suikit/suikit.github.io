@@ -13,7 +13,7 @@ const USDC_DECIMALS = 6;
 const USDC_TYPE =
     '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC';
 const CHAIN = 'sui:mainnet';
-const RPC_URL = 'https://fullnode.mainnet.sui.io:443';
+const GQL_URL = 'https://graphql.mainnet.sui.io/graphql';
 const TELEGRAM_URL = 'https://t.me/sui_kit_bot';
 // ---------------------------------------------------------------------------
 
@@ -67,26 +67,39 @@ const I18N = {
     },
 }[LANG];
 
-// Minimal JSON-RPC helper — SDK v3 dropped JSON-RPC support, but the public
-// fullnode endpoint still serves it and it is all we need for reads.
-async function rpc(method, params) {
-    const res = await fetch(RPC_URL, {
+// GraphQL helper — the public JSON-RPC fullnode endpoint was deprecated,
+// so all chain reads go through the Sui GraphQL service.
+async function gql(query) {
+    const res = await fetch(GQL_URL, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+        body: JSON.stringify({ query }),
     });
     const json = await res.json();
-    if (json.error) throw new Error(json.error.message);
-    return json.result;
+    if (json.errors) throw new Error(json.errors[0]?.message || 'query failed');
+    return json.data;
 }
+
+// Object type filter for USDC coins — the GraphQL schema wants the
+// fully-padded package id ("0x0000…02", not "0x2").
+const SUI_FRAMEWORK = '0x0000000000000000000000000000000000000000000000000000000000000002';
+const USDC_COIN_TYPE = `${SUI_FRAMEWORK}::coin::Coin<${USDC_TYPE}>`;
 
 async function getAllUsdcCoins(owner) {
     const coins = [];
     let cursor = null;
     do {
-        const page = await rpc('suix_getCoins', [owner, USDC_TYPE, cursor, 50]);
-        coins.push(...(page?.data || []));
-        cursor = page?.hasNextPage ? page.nextCursor : null;
+        const data = await gql(`{
+            objects(filter: { owner: "${owner}", type: "${USDC_COIN_TYPE}" }, first: 50${cursor ? `, after: "${cursor}"` : ''}) {
+                nodes { address asMoveObject { contents { json } } }
+                pageInfo { hasNextPage endCursor }
+            }
+        }`);
+        const conn = data?.objects;
+        for (const n of conn?.nodes || []) {
+            coins.push({ coinObjectId: n.address, balance: n.asMoveObject?.contents?.json?.balance ?? '0' });
+        }
+        cursor = conn?.pageInfo?.hasNextPage ? conn.pageInfo.endCursor : null;
     } while (cursor);
     return coins;
 }
@@ -94,8 +107,8 @@ async function getAllUsdcCoins(owner) {
 async function waitForTx(digest, tries = 8) {
     for (let i = 0; i < tries; i++) {
         try {
-            const tx = await rpc('sui_getTransactionBlock', [digest, { showEffects: true }]);
-            if (tx) return tx;
+            const data = await gql(`{ transaction(digest: "${digest}") { digest } }`);
+            if (data?.transaction) return data.transaction;
         } catch { /* not indexed yet */ }
         await new Promise((r) => setTimeout(r, 1500));
     }
@@ -111,24 +124,29 @@ function normAddr(addr) {
 async function findPayment(owner) {
     const need = BigInt(PRICE_USDC) * 10n ** BigInt(USDC_DECIMALS);
     const seller = normAddr(SELLER_ADDRESS);
-    const match = (t) => (t.balanceChanges || []).some((c) =>
-        normAddr(c.owner?.AddressOwner) === seller &&
-        c.coinType === USDC_TYPE && BigInt(c.amount) >= need);
+    const match = (t) => (t.effects?.balanceChanges?.nodes || []).some((c) =>
+        normAddr(c.owner?.address || '') === seller &&
+        c.coinType?.repr === USDC_TYPE && BigInt(c.amount) >= need);
     for (const filter of [
-        { FromAndToAddress: { from: owner, to: SELLER_ADDRESS } },
-        { FromAddress: owner },
+        `sentAddress: "${owner}", affectedAddress: "${SELLER_ADDRESS}"`,
+        `sentAddress: "${owner}"`,
     ]) {
         let cursor = null, pages = 0;
         try {
             do {
-                const res = await rpc('suix_queryTransactionBlocks', [{
-                    filter,
-                    options: { showBalanceChanges: true },
-                    order: 'descending', limit: 50, cursor,
-                }]);
-                const hit = (res?.data || []).find(match);
+                const data = await gql(`{
+                    transactions(filter: { ${filter} }, first: 50${cursor ? `, after: "${cursor}"` : ''}) {
+                        nodes {
+                            digest
+                            effects { balanceChanges { nodes { owner { address } coinType { repr } amount } } }
+                        }
+                        pageInfo { hasNextPage endCursor }
+                    }
+                }`);
+                const conn = data?.transactions;
+                const hit = (conn?.nodes || []).find(match);
                 if (hit) return hit.digest;
-                cursor = res?.hasNextPage ? res.nextCursor : null;
+                cursor = conn?.pageInfo?.hasNextPage ? conn.pageInfo.endCursor : null;
             } while (cursor && ++pages < 10);
             return null;      // filter worked, nothing found
         } catch { /* filter unsupported — try next */ }
