@@ -165,6 +165,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
   font-size:clamp(44px,7vw,84px);font-weight:800;line-height:1.02;
   letter-spacing:-.035em;max-width:760px;
 }
+.hero h1 span{
+  font-size:.52em;font-weight:600;letter-spacing:-.02em;
+  opacity:.72;
+}
 .hero p{
   margin-top:28px;font-size:clamp(18px,2.2vw,22px);line-height:1.5;
   max-width:560px;opacity:.9;
