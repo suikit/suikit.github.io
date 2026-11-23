@@ -29,4 +29,31 @@
   <url>
     <loc>https://suikit.dev/legal.ko.html</loc>
   </url>
+  <url>
+    <loc>https://suikit.dev/blog/</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/what-is-suikit-how-to-buy.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/index.pt.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/index.ko.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/what-is-suikit-how-to-buy.pt.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/what-is-suikit-how-to-buy.ko.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/sui-jsonrpc-graphql-migration.pt.html</loc>
+  </url>
+  <url>
+    <loc>https://suikit.dev/blog/sui-jsonrpc-graphql-migration.ko.html</loc>
+  </url>
 </urlset>

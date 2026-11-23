@@ -40,3 +40,9 @@ reference code instead of guesses.
 - Independence: not affiliated with, endorsed, or sponsored by Mysten Labs
   or the Sui Foundation
 - Contact: Telegram bot @sui_kit_bot · contact@suikit.dev
+
+## Blog (engineering notes)
+
+- https://suikit.dev/blog/ — article index (EN, PT, KO)
+- https://suikit.dev/blog/what-is-suikit-how-to-buy.html — product overview + purchase flow
+- https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html — Sui JSON-RPC deprecation → GraphQL migration guide

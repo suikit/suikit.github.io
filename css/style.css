@@ -426,10 +426,43 @@ footer{background:var(--ink);color:#fff;padding:72px 0 40px}
 }
 .digest-actions{display:flex;gap:16px;margin-top:8px}
 .news-list{list-style:none;margin-top:36px;max-width:640px;padding:0;border-top:1px solid var(--line)}
-.news-list li{display:flex;gap:20px;padding:14px 0;border-bottom:1px solid var(--line)}
+.news-list li{border-bottom:1px solid var(--line)}
+.news-item{display:flex;gap:20px;padding:16px 0;color:inherit}
+a.news-item:hover .news-body strong{color:var(--blue)}
 .news-date{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--blue);white-space:nowrap;padding-top:2px;min-width:86px}
-.news-list p{color:var(--grey);font-size:14.5px;line-height:1.65;margin:0}
-@media (max-width:520px){.news-list li{flex-direction:column;gap:4px}}
+.news-body{color:var(--grey);font-size:14.5px;line-height:1.65}
+.news-body strong{color:var(--ink);font-size:15px;letter-spacing:-.01em;transition:color .2s}
+.news-all{display:inline-block;margin-top:18px;font-size:14px;font-weight:600;color:var(--blue)}
+@media (max-width:520px){.news-item{flex-direction:column;gap:4px}}
+
+/* ---------- blog ---------- */
+.blog-hero{padding:64px 0 8px}
+.blog-h1{font-size:clamp(28px,4.5vw,40px);letter-spacing:-.025em;margin-top:10px}
+.blog-sub{margin-top:14px;font-size:16px;line-height:1.7;color:var(--grey);max-width:560px}
+.post-list{list-style:none;padding:0;border-top:1px solid var(--line);margin-top:40px;margin-bottom:80px}
+.post-list li{border-bottom:1px solid var(--line)}
+.post-list a{display:block;padding:22px 0}
+.post-date{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--blue)}
+.post-title{font-size:19px;font-weight:700;margin:6px 0 4px;color:var(--ink);letter-spacing:-.01em;transition:color .2s}
+.post-list a:hover .post-title{color:var(--blue)}
+.post-excerpt{color:var(--grey);font-size:14.5px;line-height:1.6}
+.blog-foot{margin-top:80px;padding:32px 0;border-top:1px solid var(--line)}
+
+.post{max-width:720px;padding-top:48px;padding-bottom:80px}
+.post h1{font-size:clamp(26px,4vw,34px);line-height:1.25;letter-spacing:-.02em;margin:10px 0 18px}
+.post h2{font-size:21px;margin:40px 0 12px;letter-spacing:-.015em}
+.post-meta{font-family:var(--mono);font-size:12.5px;color:var(--grey);letter-spacing:.06em}
+.post p{color:#333a47;font-size:16px;line-height:1.8;margin:14px 0}
+.post ul{color:#333a47;font-size:16px;line-height:1.8;margin:14px 0 14px 22px}
+.post li{margin:7px 0}
+.post strong{color:var(--ink)}
+.post code{font-family:var(--mono);font-size:.87em;background:#eef1f8;padding:2px 6px;border-radius:5px;color:#2430a0}
+.post pre{background:#0b0f24;color:#cdd6ff;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:20px 0;font-size:13px;line-height:1.65}
+.post pre code{background:none;padding:0;font-size:inherit;color:inherit}
+.post-outro{margin-top:40px;padding:20px 22px;background:#f6f7fb;border-radius:12px;border:1px solid var(--line)}
+.post-outro a{color:var(--blue);font-weight:600}
+.post-back{display:inline-block;margin-top:32px;color:var(--blue);font-size:14px}
+.post img{max-width:460px;width:100%;border-radius:14px;border:1px solid var(--line);margin:18px 0;display:block;box-shadow:0 10px 30px rgba(10,20,60,.12)}
 .digest-actions .link-btn{margin:0}
 .done-note{
   margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);

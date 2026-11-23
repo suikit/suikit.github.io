@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is SuiKit — and how to buy it | SuiKit Blog</title>
+<meta name="description" content="SuiKit is a source-available development kit for building DeepBook V3 bots on Sui. What you get, what it is not, and the step-by-step purchase flow.">
+<link rel="canonical" href="https://suikit.dev/blog/what-is-suikit-how-to-buy.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What is SuiKit — and how to buy it">
+<meta property="og:description" content="SuiKit is a source-available development kit for building DeepBook V3 bots on Sui. What you get, what it is not, and the step-by-step purchase flow.">
+<meta property="og:url" content="https://suikit.dev/blog/what-is-suikit-how-to-buy.html">
+<meta property="og:image" content="https://suikit.dev/blog/img/checkout-done.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "What is SuiKit — and how to buy it",
+    "description": "SuiKit is a source-available development kit for building DeepBook V3 bots on Sui. What you get, what it is not, and the step-by-step purchase flow.",
+    "datePublished": "2026-11-23",
+    "inLanguage": "en",
+    "image": "https://suikit.dev/blog/img/checkout-done.png",
+    "mainEntityOfPage": "https://suikit.dev/blog/what-is-suikit-how-to-buy.html",
+    "author": {
+      "@type": "Organization",
+      "name": "SuiKit",
+      "url": "https://suikit.dev/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SuiKit",
+      "url": "https://suikit.dev/"
+    },
+    "isPartOf": {
+      "@type": "Blog",
+      "name": "SuiKit Blog",
+      "url": "https://suikit.dev/blog/"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to buy SuiKit",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "text": "Open the checkout — click “Connect Wallet & Pay” on the landing page"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "text": "Connect a Sui wallet — Slush, Sui Wallet, Suiet, or any wallet-standard Sui wallet"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "text": "Pay 100 USDC on Sui mainnet — one signature, one USDC transfer"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "text": "Open the Telegram bot @sui_kit_bot — your transaction digest is attached automatically"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 5,
+        "text": "Send your GitHub username — the bot verifies the digest on-chain and invites you to the private repo"
+      }
+    ]
+  }
+]
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/#what">The Kit</a>
+      <a href="/#inside">Inside</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/what-is-suikit-how-to-buy.html" selected>EN</option><option value="/blog/what-is-suikit-how-to-buy.pt.html">PT</option><option value="/blog/what-is-suikit-how-to-buy.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">Nov 2026</time> · Guide · 5 min read</p>
+  <h1>What is SuiKit — and how to buy it</h1>
+
+  <p>SuiKit is a <strong>source-available development kit</strong> for building trading
+  bots on DeepBook V3, Sui's central limit order book. It is the hardened skeleton of a
+  bot that has actually run on mainnet — sold as source code and documentation, not as
+  a service, a signal feed, or a promise of profit.</p>
+
+  <h2>What you get</h2>
+
+  <ul>
+    <li><strong>Execution engine</strong> — the full BalanceManager lifecycle (free vs.
+    locked balances), atomic cancel-and-place, MoveAbort code-3 mitigation, gas-reserve
+    logic.</li>
+    <li><strong>Decision layer</strong> — a deterministic 5-phase quant engine. An
+    optional DeepSeek overlay exists, but no LLM ever touches the order book.</li>
+    <li><strong>Ops tooling</strong> — live HTML dashboards, Telegram alerts, fill and
+    cost-basis tracking, an error watcher, and stagnation monitoring out of the box.</li>
+  </ul>
+
+  <p>Everything arrives as a private GitHub repository you clone and read. A good way to
+  use it: point an AI coding agent at the repo — it starts from working answers instead
+  of guesses.</p>
+
+  <h2>What it is not</h2>
+
+  <ul>
+    <li>Not a managed service — you run it yourself.</li>
+    <li>Not a signal group — no calls, no copy-trading.</li>
+    <li>No profit guarantee — the strategies are reference implementations for study.</li>
+    <li>Not an official product — SuiKit is independent and not affiliated with Mysten
+    Labs, the Sui Foundation, or DeepBook.</li>
+  </ul>
+
+  <h2>How to buy — step by step</h2>
+
+  <ul>
+    <li><strong>1. Open the checkout</strong> — click “Connect Wallet &amp; Pay” on the
+    <a href="/">landing page</a>.</li>
+    <li><strong>2. Connect a Sui wallet</strong> — Slush, Sui Wallet, Suiet, or any
+    wallet-standard Sui wallet. On mobile, open the page inside your wallet app's
+    built-in browser.</li>
+    <li><strong>3. Pay 100 USDC (Sui mainnet)</strong> — one signature, one USDC
+    transfer. Gas is paid in SUI by your wallet as usual. That's the only thing we will
+    ever ask you to sign.</li>
+    <img src="/blog/img/checkout-pay.png" alt="SuiKit checkout — sign one $100 USDC transaction" loading="lazy">
+    <li><strong>4. Open the Telegram bot</strong> — the payment screen links to
+    <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>
+    with your transaction digest attached.</li>
+    <img src="/blog/img/tg-start.png" alt="Telegram bot — /start and the digest request reply" loading="lazy">
+    <li><strong>5. Send your GitHub username</strong> — the bot verifies the digest
+    on-chain, then invites you to the private repo. It usually takes under a minute.
+    Adding your email is optional — it gets you priority invites to extended editions.</li>
+    <img src="/blog/img/tg-invite.png" alt="Telegram bot — digest verified, GitHub collaborator invite sent" loading="lazy">
+  </ul>
+
+  <img src="/blog/img/checkout-done.png" alt="Payment sent — transaction digest and Telegram bot handoff" loading="lazy">
+  <p><strong>Paying from a wallet you can't connect?</strong> Send 100 USDC to the
+  seller address shown in the checkout from any wallet or exchange, then send the
+  transaction digest to the bot the same way. Verification is on-chain — it doesn't
+  matter which wallet paid.</p>
+
+  <p>Early access is $100 USDC; the regular price will be $199. One payment, lifetime
+  repository access.</p>
+
+  <p class="post-outro">Ready when you are — <a href="/">see the kit →</a></p>
+
+  <a class="post-back" href="/blog/">← Back to all posts</a>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/#what">The Kit</a>
+        <a href="/#inside">What's inside</a>
+        <a href="/#get">Get access</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+      <p class="muted small">Already paid from a different wallet? Just send the
+      digest to <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — no need to pay again.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, open our Telegram bot — your digest is attached
+        automatically. It verifies the payment and asks for your
+        <strong>GitHub username</strong> (optionally your <strong>email</strong>
+        for priority invites). The invite usually arrives within a minute.
+        If anything goes wrong, message the bot — a human reads it.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Open Telegram bot →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Connected: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">disconnect</button>
+    </div>
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — SuiKit</title>
+<meta name="description" content="Engineering notes from building a DeepBook V3 bot kit on Sui — payment verification, on-chain edge cases, and production fixes.">
+<link rel="canonical" href="https://suikit.dev/blog/index.pt.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.pt.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.pt.html#what">O Kit</a>
+      <a href="/index.pt.html#inside">Conteúdo</a>
+      <a href="/index.pt.html#faq">FAQ</a>
+      <a href="/blog/index.pt.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/index.html">EN</option><option value="/blog/index.pt.html" selected>PT</option><option value="/blog/index.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Conectar Carteira e Pagar<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="blog-hero">
+  <div class="container">
+    <div class="kicker">BLOG</div>
+    <h1 class="blog-h1">Notas de engenharia.</h1>
+    <p class="blog-sub">O que realmente é preciso para entregar um kit de bot para DeepBook V3 — verificação de pagamentos, edge cases on-chain e correções de produção. Nada de papo de lucro, só código.</p>
+  </div>
+</header>
+
+<main class="container">
+  <ul class="post-list">
+    <li>
+      <a href="/blog/what-is-suikit-how-to-buy.pt.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">O que é o SuiKit — e como comprar</div>
+        <p class="post-excerpt">Um kit de desenvolvimento com código-fonte para DeepBook V3 na Sui. O que você recebe, o que não é, e o fluxo de compra passo a passo.</p>
+      </a>
+    </li>
+    <li>
+      <a href="/blog/sui-jsonrpc-graphql-migration.pt.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">A Sui descontinuou o JSON-RPC público — migrando a verificação de pagamento para GraphQL</div>
+        <p class="post-excerpt">Nosso bot de fulfillment começou a retornar “Method not found” da noite para o dia. O JSON-RPC público dos fullnodes da Sui foi descontinuado — aqui está a migração exata para GraphQL que resolveu.</p>
+      </a>
+    </li>
+  </ul>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.pt.html#what">O Kit</a>
+        <a href="/index.pt.html#inside">Conteúdo</a>
+        <a href="/index.pt.html#get">Obter acesso</a>
+        <a href="/blog/index.pt.html">Blog</a>
+      </div>
+      <div>
+        <h4>Protocolo</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Rede</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.pt.html">Termos &amp; Privacidade</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pagar com carteira Sui">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · acesso ao repo privado</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Escolha uma carteira Sui para continuar.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Pagando como <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">Você assinará uma transação: <strong>$100 USDC → vendedor</strong>.
+      O gas em SUI é pago pela sua carteira, como sempre.</p>
+      <button class="btn btn-ink" id="pay-btn">Pagar $100 USDC</button>
+      <p class="sec-note">🔒 A assinatura cobre apenas esta transferência de USDC.<br>Nunca compartilhe sua seed phrase — nós nunca pedimos.</p>
+      <button class="link-btn" id="pay-back">← escolher outra carteira</button>
+      <p class="muted small">Já pagou de outra carteira? Envie o digest ao
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — não pague de novo.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Pagamento enviado.</strong></p>
+      <p class="muted small">Digest da transação:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copiar</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">ver no suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>Para concluir o acesso, abra nosso bot no Telegram — seu digest já vai
+        anexado. Ele verifica o pagamento e pergunta seu <strong>usuário do
+        GitHub</strong> (e opcionalmente seu <strong>e-mail</strong> para convites
+        prioritários). O convite costuma chegar em menos de um minuto.
+        Se algo der errado, fale com o bot — uma pessoa lê as mensagens.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Abrir bot no Telegram →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Algo deu errado</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">tentar novamente</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Conectada: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">desconectar</button>
+    </div>
+    <p class="pay-foot">Os pagamentos são liquidados on-chain para o endereço do vendedor. Sem custódia, sem dados de cartão.
+    Só solicitamos a assinatura da transferência de USDC — nunca pediremos
+    sua seed phrase ou chave privada.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

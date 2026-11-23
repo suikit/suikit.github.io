@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Sui descontinuou o JSON-RPC público — migrando a verificação de pagamento para GraphQL | SuiKit Blog</title>
+<meta name="description" content="O JSON-RPC público dos fullnodes da Sui foi descontinuado. A migração exata para GraphQL que manteve a verificação de pagamento USDC on-chain funcionando — queries, armadilhas e código.">
+<link rel="canonical" href="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.pt.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Sui descontinuou o JSON-RPC público — migrando a verificação de pagamento para GraphQL">
+<meta property="og:description" content="O JSON-RPC público dos fullnodes da Sui foi descontinuado. A migração exata para GraphQL que manteve a verificação de pagamento USDC on-chain funcionando.">
+<meta property="og:url" content="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.pt.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "A Sui descontinuou o JSON-RPC público — migrando a verificação de pagamento para GraphQL",
+  "description": "O JSON-RPC público dos fullnodes da Sui foi descontinuado. A migração exata para GraphQL que manteve a verificação de pagamento USDC on-chain funcionando.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "pt-BR",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/sui-jsonrpc-graphql-migration.pt.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.pt.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.pt.html#what">O Kit</a>
+      <a href="/index.pt.html#inside">Conteúdo</a>
+      <a href="/index.pt.html#faq">FAQ</a>
+      <a href="/blog/index.pt.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/sui-jsonrpc-graphql-migration.html">EN</option><option value="/blog/sui-jsonrpc-graphql-migration.pt.html" selected>PT</option><option value="/blog/sui-jsonrpc-graphql-migration.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Conectar Carteira e Pagar<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">Nov 2026</time> · Engenharia · leitura de 6 min</p>
+  <h1>A Sui descontinuou o JSON-RPC público — migrando a verificação de pagamento para GraphQL</h1>
+
+  <p>O SuiKit vende acesso a um kit de bot para DeepBook V3. O pagamento é de 100 USDC
+  na mainnet da Sui, e um bot do Telegram verifica o digest da transação on-chain antes
+  de convidar o comprador para o repositório privado. Um dia, a verificação começou a
+  falhar em todas as requisições com a mesma mensagem:</p>
+
+  <pre><code>{&quot;error&quot;:{&quot;code&quot;:-32601,&quot;message&quot;:&quot;Method not found. JSON-RPC on public fullnodes has been deprecated.&quot;}}</code></pre>
+
+  <p>A transação estava perfeita — confirmada, bem-sucedida, USDC entregue. O endpoint
+  RPC é que estava morto. Tudo que lia a chain precisou migrar para a API GraphQL da Sui
+  (<code>https://graphql.mainnet.sui.io/graphql</code>). Este post é a migração, como ela
+  realmente aconteceu.</p>
+
+  <h2>O que quebrou</h2>
+
+  <p>Três métodos JSON-RPC estavam em uso na página de checkout e no bot:</p>
+
+  <ul>
+    <li><code>sui_getTransactionBlock</code> — verificar o digest do pagamento (status + mudanças de saldo)</li>
+    <li><code>suix_getCoins</code> — buscar os objetos de moeda USDC da carteira antes de montar a tx de pagamento</li>
+    <li><code>suix_queryTransactionBlocks</code> — detectar se a carteira conectada já havia pago</li>
+  </ul>
+
+  <h2>As queries substitutas</h2>
+
+  <p><strong>1. Verificar o digest do pagamento</strong> — o caminho crítico. O bot
+  precisa do status da tx e da lista de mudanças de saldo para confirmar que ≥100 USDC
+  chegaram ao endereço do vendedor:</p>
+
+  <pre><code>query ($digest: String!) {
+  transaction(digest: $digest) {
+    digest
+    effects {
+      status
+      balanceChanges {
+        nodes {
+          owner { ... on AddressOwner { owner { address } } }
+          coinType { repr }
+          amount
+        }
+      }
+    }
+  }
+}</code></pre>
+
+  <p>A lógica de verificação continua a mesma: <code>effects.status == "SUCCESS"</code>,
+  depois some os <code>balanceChanges</code> onde <code>coinType.repr</code> corresponde
+  ao tipo USDC e o endereço do owner é o do vendedor. Se o valor creditado ≥ preço, o
+  digest é válido.</p>
+
+  <p><strong>2. Buscar moedas USDC para a tx de pagamento</strong> — <code>suix_getCoins</code>
+  vira uma query <code>objects</code> com filtro de tipo:</p>
+
+  <pre><code>query ($owner: SuiAddress!, $type: String!) {
+  address(address: $owner) {
+    objects(filter: { type: $type }, first: 50) {
+      nodes { digest objectId version }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+}</code></pre>
+
+  <p><strong>3. Detectar pagamento anterior</strong> — substitua
+  <code>suix_queryTransactionBlocks</code> pela conexão <code>transactions</code> com dois
+  filtros:</p>
+
+  <pre><code>transactions(filter: { sentAddress: $buyer, affectedAddress: $seller }, first: 50) {
+  nodes { digest effects { status balanceChanges { nodes { ... } } } }
+}</code></pre>
+
+  <h2>Armadilhas que custaram tempo</h2>
+
+  <ul>
+    <li><strong>O campo é <code>transaction</code>, não <code>transactionBlock</code>.</strong>
+    O hábito dos nomes JSON-RPC leva a <code>transactionBlock</code>; o schema usa
+    <code>transaction</code> e <code>transactions</code>.</li>
+    <li><strong>Os reprs de tipo de moeda têm zero-padding.</strong> <code>coinType.repr</code>
+    e o filtro <code>objects(type:)</code> usam a forma canônica preenchida —
+    <code>0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin&lt;…&gt;</code>
+    — não o <code>0x2::coin::Coin</code> curto que se escreve em Move. Compare pelo
+    sufixo <code>::usdc::USDC</code> ou preencha o endereço antes de comparar.</li>
+    <li><strong>A paginação é estilo Relay.</strong> Tudo é
+    <code>nodes { … } pageInfo { hasNextPage endCursor }</code>. Para uma carteira com
+    muitas moedas USDC, itere sobre <code>hasNextPage</code>.</li>
+    <li><strong>Existe lag de indexação.</strong> Um digest pode retornar 404 por alguns
+    segundos após o broadcast — igual ao JSON-RPC. Faça polling com backoff, não falhe rápido.</li>
+  </ul>
+
+  <h2>Resultado</h2>
+
+  <p>Mesmas verificações, novo transporte. O bot verifica o digest → pede o nome de
+  usuário do GitHub → convida o comprador para o repositório privado, ponta a ponta,
+  só com GraphQL. Se você ainda chama JSON-RPC de <code>fullnode.*.sui.io</code> em algum
+  lugar, vai morrer silenciosamente como aconteceu conosco — procure no seu código por
+  métodos <code>sui_</code>/<code>suix_</code> agora.</p>
+
+  <p class="post-outro">O SuiKit é um kit com código-fonte de bot para DeepBook V3 —
+  verificação de pagamento como esta vem incluída. <a href="/index.pt.html">Veja o kit →</a></p>
+
+  <a class="post-back" href="/blog/index.pt.html">← Voltar aos posts</a>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.pt.html#what">O Kit</a>
+        <a href="/index.pt.html#inside">Conteúdo</a>
+        <a href="/index.pt.html#get">Obter acesso</a>
+        <a href="/blog/index.pt.html">Blog</a>
+      </div>
+      <div>
+        <h4>Protocolo</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Rede</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.pt.html">Termos &amp; Privacidade</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pagar com carteira Sui">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · acesso ao repo privado</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Escolha uma carteira Sui para continuar.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Pagando como <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">Você assinará uma transação: <strong>$100 USDC → vendedor</strong>.
+      O gas em SUI é pago pela sua carteira, como sempre.</p>
+      <button class="btn btn-ink" id="pay-btn">Pagar $100 USDC</button>
+      <p class="sec-note">🔒 A assinatura cobre apenas esta transferência de USDC.<br>Nunca compartilhe sua seed phrase — nós nunca pedimos.</p>
+      <button class="link-btn" id="pay-back">← escolher outra carteira</button>
+      <p class="muted small">Já pagou de outra carteira? Envie o digest ao
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — não pague de novo.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Pagamento enviado.</strong></p>
+      <p class="muted small">Digest da transação:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copiar</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">ver no suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>Para concluir o acesso, abra nosso bot no Telegram — seu digest já vai
+        anexado. Ele verifica o pagamento e pergunta seu <strong>usuário do
+        GitHub</strong> (e opcionalmente seu <strong>e-mail</strong> para convites
+        prioritários). O convite costuma chegar em menos de um minuto.
+        Se algo der errado, fale com o bot — uma pessoa lê as mensagens.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Abrir bot no Telegram →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Algo deu errado</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">tentar novamente</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Conectada: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">desconectar</button>
+    </div>
+    <p class="pay-foot">Os pagamentos são liquidados on-chain para o endereço do vendedor. Sem custódia, sem dados de cartão.
+    Só solicitamos a assinatura da transferência de USDC — nunca pediremos
+    sua seed phrase ou chave privada.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

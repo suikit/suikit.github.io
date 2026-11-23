@@ -49,6 +49,20 @@
         "price": "100",
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock",
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "Worldwide",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
+        },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
+          }
+        },
         "url": "https://suikit.dev/"
       }
     },
@@ -87,6 +101,7 @@
       <a href="#what">키트</a>
       <a href="#inside">구성</a>
       <a href="#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
       <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="index.html">EN</option><option value="index.pt.html">PT</option><option value="index.ko.html" selected>KO</option></select>
       <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
     </div>
@@ -388,13 +403,16 @@
 </section>
 
 <section class="section" id="news">
+  <svg class="wm sui" data-plx="0.32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
+  <svg class="wm db" data-plx="-0.24" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">
     <div class="kicker">업데이트</div>
-    <h2>새 소식.</h2>
-    <ul class="news-list">
-      <li><span class="news-date">2026.11</span><p>SuiKit 얼리 액세스 오픈 — 1회 $100 USDC 결제로 repo 평생 액세스(정가 $199).</p></li>
-      <li><span class="news-date">2026.11</span><p>공개 JSON-RPC 폐지에 따라 결제 검증을 Sui GraphQL API로 이전했습니다.</p></li>
-    </ul>
+    <h2>엔지니어링 노트.</h2>
+      <ul class="news-list">
+        <li><a class="news-item" href="/blog/what-is-suikit-how-to-buy.ko.html"><span class="news-date">Nov 2026</span><span class="news-body"><strong>What is SuiKit — and how to buy it</strong><br>Sui의 DeepBook V3용 소스 공개 개발 키트 — 무엇을 받는지, 무엇이 아닌지, 구매 절차까지 단계별로 설명합니다.</span></a></li>
+        <li><a class="news-item" href="/blog/sui-jsonrpc-graphql-migration.ko.html"><span class="news-date">Nov 2026</span><span class="news-body"><strong>Sui deprecated public JSON-RPC — migrating payment verification to GraphQL</strong><br>풀필먼트 봇이 하룻밤 사이에 “Method not found”를 반환하기 시작했습니다 — 이를 해결한 실제 마이그레이션.</span></a></li>
+      </ul>
+      <a class="news-all" href="/blog/index.ko.html">모든 글 →</a>
   </div>
 </section>
 
@@ -418,6 +436,7 @@
         <a href="#what">키트</a>
         <a href="#inside">구성 내용</a>
         <a href="#get">액세스 받기</a>
+        <a href="/blog/">Blog</a>
       </div>
       <div>
         <h4>프로토콜</h4>
@@ -435,7 +454,7 @@
       </div>
       <div>
         <h4>법적 고지</h4>
-        <a href="legal.html">약관 &amp; 개인정보</a>
+        <a href="legal.ko.html">약관 &amp; 개인정보</a>
       </div>
     </div>
     <div class="foot-mark" aria-hidden="true">SuiKit</div>

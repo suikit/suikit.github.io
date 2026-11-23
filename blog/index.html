@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — SuiKit</title>
+<meta name="description" content="Engineering notes from building a DeepBook V3 bot kit on Sui — payment verification, on-chain edge cases, and production fixes.">
+<link rel="canonical" href="https://suikit.dev/blog/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/#what">The Kit</a>
+      <a href="/#inside">Inside</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/index.html" selected>EN</option><option value="/blog/index.pt.html">PT</option><option value="/blog/index.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="blog-hero">
+  <div class="container">
+    <div class="kicker">BLOG</div>
+    <h1 class="blog-h1">Engineering notes.</h1>
+    <p class="blog-sub">What it actually takes to ship a DeepBook V3 bot kit — payment
+    verification, on-chain edge cases, and production fixes. No profit talk, just code.</p>
+  </div>
+</header>
+
+<main class="container">
+  <ul class="post-list">
+    <li>
+      <a href="/blog/what-is-suikit-how-to-buy.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">What is SuiKit — and how to buy it</div>
+        <p class="post-excerpt">A source-available development kit for DeepBook V3 on
+        Sui. What you get, what it is not, and the step-by-step purchase flow.</p>
+      </a>
+    </li>
+    <li>
+      <a href="/blog/sui-jsonrpc-graphql-migration.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">Sui deprecated public JSON-RPC — migrating payment verification to GraphQL</div>
+        <p class="post-excerpt">Our fulfillment bot started returning “Method not found”
+        overnight. Public JSON-RPC on Sui fullnodes was deprecated — here is the exact
+        GraphQL migration that fixed it.</p>
+      </a>
+    </li>
+  </ul>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/#what">The Kit</a>
+        <a href="/#inside">What's inside</a>
+        <a href="/#get">Get access</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+      <p class="muted small">Already paid from a different wallet? Just send the
+      digest to <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — no need to pay again.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, open our Telegram bot — your digest is attached
+        automatically. It verifies the payment and asks for your
+        <strong>GitHub username</strong> (optionally your <strong>email</strong>
+        for priority invites). The invite usually arrives within a minute.
+        If anything goes wrong, message the bot — a human reads it.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Open Telegram bot →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Connected: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">disconnect</button>
+    </div>
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script>
+</body>
+</html>

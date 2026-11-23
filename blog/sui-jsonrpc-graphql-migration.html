@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sui deprecated public JSON-RPC — migrating payment verification to GraphQL | SuiKit Blog</title>
+<meta name="description" content="Public JSON-RPC on Sui fullnodes was deprecated. Here is the exact GraphQL migration we used to keep on-chain USDC payment verification working — queries, gotchas, and code.">
+<link rel="canonical" href="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sui deprecated public JSON-RPC — migrating payment verification to GraphQL">
+<meta property="og:description" content="Public JSON-RPC on Sui fullnodes was deprecated. The exact GraphQL migration that kept on-chain USDC payment verification working — queries, gotchas, and code.">
+<meta property="og:url" content="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Sui deprecated public JSON-RPC — migrating payment verification to GraphQL",
+  "description": "Public JSON-RPC on Sui fullnodes was deprecated. The exact GraphQL migration that kept on-chain USDC payment verification working — queries, gotchas, and code.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "en",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/#what">The Kit</a>
+      <a href="/#inside">Inside</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/sui-jsonrpc-graphql-migration.html" selected>EN</option><option value="/blog/sui-jsonrpc-graphql-migration.pt.html">PT</option><option value="/blog/sui-jsonrpc-graphql-migration.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">Nov 2026</time> · Engineering · 6 min read</p>
+  <h1>Sui deprecated public JSON-RPC — migrating payment verification to GraphQL</h1>
+
+  <p>SuiKit sells access to a DeepBook V3 bot kit. Payment is 100 USDC on Sui mainnet,
+  and a Telegram bot verifies the transaction digest on-chain before inviting the buyer
+  to the private repo. One day the verification started failing on every request with
+  the same message:</p>
+
+  <pre><code>{"error":{"code":-32601,"message":"Method not found. JSON-RPC on public fullnodes has been deprecated."}}</code></pre>
+
+  <p>The transaction was fine — confirmed, successful, USDC delivered. The RPC endpoint
+  was dead. Everything reading the chain had to move to the Sui GraphQL API
+  (<code>https://graphql.mainnet.sui.io/graphql</code>). This post is the migration, as we
+  actually did it.</p>
+
+  <h2>What broke</h2>
+
+  <p>Three JSON-RPC methods were in use across the checkout page and the bot:</p>
+
+  <ul>
+    <li><code>sui_getTransactionBlock</code> — verify a payment digest (status + balance changes)</li>
+    <li><code>suix_getCoins</code> — fetch a wallet's USDC coin objects before building the pay tx</li>
+    <li><code>suix_queryTransactionBlocks</code> — detect whether a connected wallet had already paid</li>
+  </ul>
+
+  <h2>The replacement queries</h2>
+
+  <p><strong>1. Verify a payment digest</strong> — this is the critical path. The bot needs
+  the tx status and the list of balance changes to confirm ≥100 USDC landed on the
+  seller address:</p>
+
+  <pre><code>query ($digest: String!) {
+  transaction(digest: $digest) {
+    digest
+    effects {
+      status
+      balanceChanges {
+        nodes {
+          owner { ... on AddressOwner { owner { address } } }
+          coinType { repr }
+          amount
+        }
+      }
+    }
+  }
+}</code></pre>
+
+  <p>Verification logic stays the same: <code>effects.status == "SUCCESS"</code>, then sum
+  <code>balanceChanges</code> where <code>coinType.repr</code> matches the USDC type and the
+  owner address equals the seller's. If the credited amount ≥ price, the digest is good.</p>
+
+  <p><strong>2. Fetch USDC coins for the pay tx</strong> — <code>suix_getCoins</code> becomes an
+  <code>objects</code> query with a type filter:</p>
+
+  <pre><code>query ($owner: SuiAddress!, $type: String!) {
+  address(address: $owner) {
+    objects(filter: { type: $type }, first: 50) {
+      nodes { digest objectId version }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+}</code></pre>
+
+  <p><strong>3. Detect a prior payment</strong> — replace
+  <code>suix_queryTransactionBlocks</code> with the <code>transactions</code> connection and
+  two filters:</p>
+
+  <pre><code>transactions(filter: { sentAddress: $buyer, affectedAddress: $seller }, first: 50) {
+  nodes { digest effects { status balanceChanges { nodes { ... } } } }
+}</code></pre>
+
+  <h2>Gotchas that cost us time</h2>
+
+  <ul>
+    <li><strong>The field is <code>transaction</code>, not <code>transactionBlock</code>.</strong>
+    JSON-RPC naming habits will send you to <code>transactionBlock</code>; the schema uses
+    <code>transaction</code> and <code>transactions</code>.</li>
+    <li><strong>Coin type reprs are zero-padded.</strong> <code>coinType.repr</code> and the
+    <code>objects(type:)</code> filter use the canonical padded form —
+    <code>0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin&lt;…&gt;</code>
+    — not the short <code>0x2::coin::Coin</code> you write in Move. Match on
+    <code>::usdc::USDC</code> suffix or pad the address before comparing.</li>
+    <li><strong>Pagination is Relay-style.</strong> Everything is
+    <code>nodes { … } pageInfo { hasNextPage endCursor }</code>. For a wallet holding many
+    USDC coins, loop on <code>hasNextPage</code>.</li>
+    <li><strong>Indexing lag exists.</strong> A digest may 404 for a few seconds after
+    broadcast — same as JSON-RPC. Poll with backoff, don't fail fast.</li>
+  </ul>
+
+  <h2>Result</h2>
+
+  <p>Same checks, new transport. The bot verifies a digest → asks for a GitHub username →
+  invites the buyer to the private repo, end to end, on GraphQL only. If you are still
+  calling <code>fullnode.*.sui.io</code> JSON-RPC anywhere, it will silently die the same
+  way ours did — grep your codebase for <code>sui_</code>/<code>suix_</code> method names
+  now.</p>
+
+  <p class="post-outro">SuiKit is a DeepBook V3 bot source kit — payment verification like
+  this ships in the box. <a href="/">See the kit →</a></p>
+
+  <a class="post-back" href="/blog/">← Back to all posts</a>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/#what">The Kit</a>
+        <a href="/#inside">What's inside</a>
+        <a href="/#get">Get access</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+      <p class="muted small">Already paid from a different wallet? Just send the
+      digest to <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — no need to pay again.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, open our Telegram bot — your digest is attached
+        automatically. It verifies the payment and asks for your
+        <strong>GitHub username</strong> (optionally your <strong>email</strong>
+        for priority invites). The invite usually arrives within a minute.
+        If anything goes wrong, message the bot — a human reads it.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Open Telegram bot →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Connected: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">disconnect</button>
+    </div>
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuiKit이란 — 그리고 구매 방법 | SuiKit Blog</title>
+<meta name="description" content="SuiKit은 Sui의 DeepBook V3 봇을 위한 소스 공개 개발 키트입니다. 무엇을 받는지, 무엇이 아닌지, 구매 절차를 단계별로 설명합니다.">
+<link rel="canonical" href="https://suikit.dev/blog/what-is-suikit-how-to-buy.ko.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SuiKit이란 — 그리고 구매 방법">
+<meta property="og:description" content="SuiKit은 Sui의 DeepBook V3 봇을 위한 소스 공개 개발 키트입니다. 무엇을 받는지, 무엇이 아닌지, 구매 절차를 단계별로 설명합니다.">
+<meta property="og:url" content="https://suikit.dev/blog/what-is-suikit-how-to-buy.ko.html">
+<meta property="og:image" content="https://suikit.dev/blog/img/checkout-done.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "SuiKit이란 — 그리고 구매 방법",
+    "description": "SuiKit은 Sui의 DeepBook V3 봇을 위한 소스 공개 개발 키트입니다. 무엇을 받는지, 무엇이 아닌지, 구매 절차를 단계별로 설명합니다.",
+    "datePublished": "2026-11-23",
+    "inLanguage": "ko",
+    "image": "https://suikit.dev/blog/img/checkout-done.png",
+    "mainEntityOfPage": "https://suikit.dev/blog/what-is-suikit-how-to-buy.ko.html",
+    "author": {
+      "@type": "Organization",
+      "name": "SuiKit",
+      "url": "https://suikit.dev/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SuiKit",
+      "url": "https://suikit.dev/"
+    },
+    "isPartOf": {
+      "@type": "Blog",
+      "name": "SuiKit Blog",
+      "url": "https://suikit.dev/blog/"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "SuiKit 구매 방법",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "text": "체크아웃 열기 — 랜딩 페이지에서 “월렛 연결 & 결제” 클릭"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "text": "Sui 월렛 연결 — Slush, Sui Wallet, Suiet 등 wallet-standard 호환 월렛"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "text": "Sui 메인넷에서 100 USDC 결제 — 서명 한 번, USDC 전송 한 건"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "text": "Telegram 봇 @sui_kit_bot 열기 — 트랜잭션 digest가 자동 첨부됩니다"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 5,
+        "text": "GitHub 사용자명 전송 — 봇이 digest를 온체인 검증 후 비공개 repo로 초대"
+      }
+    ]
+  }
+]
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.ko.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.ko.html#what">키트</a>
+      <a href="/index.ko.html#inside">구성 내용</a>
+      <a href="/index.ko.html#faq">FAQ</a>
+      <a href="/blog/index.ko.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/what-is-suikit-how-to-buy.html">EN</option><option value="/blog/what-is-suikit-how-to-buy.pt.html">PT</option><option value="/blog/what-is-suikit-how-to-buy.ko.html" selected>KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">2026.11</time> · 가이드 · 5분</p>
+  <h1>SuiKit이란 — 그리고 구매 방법</h1>
+
+  <p>SuiKit은 Sui의 중앙 지정가 호가창(CLOB)인 DeepBook V3용 트레이딩 봇을 구축하기 위한
+  <strong>소스 공개 개발 키트</strong>입니다. 메인넷에서 실제로 동작한 봇의 검증된 골격으로,
+  서비스·시그널 피드·수익 보장이 아닌 소스 코드와 문서로 판매됩니다.</p>
+
+  <h2>포함 내용</h2>
+
+  <ul>
+    <li><strong>실행 엔진</strong> — BalanceManager 라이프사이클 전체(자유 잔고 vs 잠금 잔고),
+    원자적 취소·주문, MoveAbort 코드 3 완화, gas 리저브 로직.</li>
+    <li><strong>의사결정 레이어</strong> — 결정론적 5단계 퀀트 엔진. DeepSeek 오버레이는
+    선택 사항이며, 어떤 LLM도 호가창을 건드리지 않습니다.</li>
+    <li><strong>운영 도구</strong> — 라이브 HTML 대시보드, Telegram 알림, 체결·원가 추적,
+    에러 워처, 정체 모니터링이 기본으로 포함됩니다.</li>
+  </ul>
+
+  <p>모든 것은 클론해서 읽는 비공개 GitHub 저장소로 제공됩니다. 추천하는 활용법은 AI 코딩
+  에이전트에 repo를 읽히는 것입니다 — 추측이 아니라 검증된 답에서 시작합니다.</p>
+
+  <h2>아닌 것</h2>
+
+  <ul>
+    <li>관리형 서비스가 아닙니다 — 직접 실행합니다.</li>
+    <li>시그널 그룹이 아닙니다 — 호출도 카피 트레이딩도 없습니다.</li>
+    <li>수익 보장은 없습니다 — 전략은 학습용 레퍼런스 구현입니다.</li>
+    <li>공식 제품이 아닙니다 — SuiKit은 독립 프로젝트로 Mysten Labs, Sui Foundation,
+    DeepBook과 무관합니다.</li>
+  </ul>
+
+  <h2>구매 방법 — 단계별</h2>
+
+  <ul>
+    <li><strong>1. 체크아웃 열기</strong> — <a href="/index.ko.html">랜딩 페이지</a>에서
+    “월렛 연결 &amp; 결제”를 클릭합니다.</li>
+    <li><strong>2. Sui 월렛 연결</strong> — Slush, Sui Wallet, Suiet 등 wallet-standard
+    호환 Sui 월렛. 모바일에서는 월렛 앱 내장 브라우저에서 페이지를 여세요.</li>
+    <li><strong>3. 100 USDC 결제(Sui 메인넷)</strong> — 서명 한 번, USDC 전송 한 건.
+    gas는 평소처럼 월렛의 SUI로 지불됩니다. 서명을 요청하는 것은 이것뿐입니다.</li>
+    <img src="/blog/img/checkout-pay.png" alt="SuiKit 체크아웃 — $100 USDC 트랜잭션에 서명" loading="lazy">
+    <li><strong>4. Telegram 봇 열기</strong> — 결제 화면의 링크가 트랜잭션 digest를 첨부해
+    <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>으로
+    연결됩니다.</li>
+    <img src="/blog/img/tg-start.png" alt="Telegram 봇 — /start와 digest 요청 응답" loading="lazy">
+    <li><strong>5. GitHub 사용자명 전송</strong> — 봇이 digest를 온체인 검증한 뒤 비공개
+    repo로 초대합니다. 보통 1분 이내입니다. 이메일 추가는 선택 사항이며 확장 에디션
+    우선 초대를 받을 수 있습니다.</li>
+    <img src="/blog/img/tg-invite.png" alt="Telegram 봇 — digest 검증 완료, GitHub 협력자 초대 발송" loading="lazy">
+  </ul>
+
+  <img src="/blog/img/checkout-done.png" alt="결제 완료 — 트랜잭션 digest와 Telegram 봇 연결" loading="lazy">
+
+  <p><strong>연결할 수 없는 월렛으로 결제하나요?</strong> 임의의 월렛이나 거래소에서
+  체크아웃에 표시된 판매자 주소로 100 USDC를 보낸 뒤, 같은 방법으로 트랜잭션 digest를
+  봇에 보내면 됩니다. 검증은 온체인에서 이루어지므로 어떤 월렛이 결제했는지는 무관합니다.</p>
+
+  <p>얼리 액세스는 $100 USDC이며 정가는 $199입니다. 1회 결제로 repo 평생 액세스.</p>
+
+  <p class="post-outro">준비되셨다면 — <a href="/index.ko.html">키트 보기 →</a></p>
+
+  <a class="post-back" href="/blog/index.ko.html">← 모든 글로 돌아가기</a>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.ko.html#what">키트</a>
+        <a href="/index.ko.html#inside">구성 내용</a>
+        <a href="/index.ko.html#get">액세스 받기</a>
+        <a href="/blog/index.ko.html">Blog</a>
+      </div>
+      <div>
+        <h4>프로토콜</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>네트워크</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>법적 고지</h4>
+        <a href="/legal.ko.html">약관 &amp; 개인정보</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · 비공개 repo 액세스</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">계속하려면 Sui 월렛을 선택하세요.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">결제 계정 <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">한 건의 트랜잭션에 서명합니다: <strong>$100 USDC → 판매자</strong>. gas는 평소처럼 월렛의 SUI로 지불됩니다.</p>
+      <button class="btn btn-ink" id="pay-btn">$100 USDC 결제</button>
+      <p class="sec-note">🔒 서명은 이 USDC 전송에만 적용됩니다.<br>시드 문구는 절대 공유하지 마세요 — 저희는 요구하지 않습니다.</p>
+      <button class="link-btn" id="pay-back">← 다른 월렛 선택</button>
+      <p class="muted small">다른 월렛에서 이미 결제했다면 digest를
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>에 보내주세요 — 다시 결제할 필요 없습니다.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>결제가 전송되었습니다.</strong></p>
+      <p class="muted small">트랜잭션 digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">복사</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">suiscan에서 보기 ↗</a>
+      </div>
+      <div class="done-note">
+        <p>액세스를 완료하려면 Telegram 봇을 여세요 — digest가 자동으로 첨부됩니다. 결제를 검증한 뒤
+        <strong>GitHub 사용자명</strong> (선택적으로 <strong>이메일</strong>
+        도 함께 — 우선 초대용)을 물어봅니다. 초대는 보통 1분 이내에 도착합니다. 문제가 생기면 봇에 메시지를 보내세요 — 사람이 확인합니다.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram 봇 열기 →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>문제가 발생했습니다</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">다시 시도</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">연결됨: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">연결 해제</button>
+    </div>
+    <p class="pay-foot">결제는 판매자 주소로 온체인 정산됩니다. 커스터디도, 카드 데이터도 없습니다. 서명을 요청하는 것은 USDC 전송뿐 — 시드 문구나 개인키는 절대 요구하지 않습니다.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

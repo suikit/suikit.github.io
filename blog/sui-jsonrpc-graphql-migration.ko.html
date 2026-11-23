@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sui 공개 JSON-RPC 폐지 — 결제 검증을 GraphQL로 마이그레이션 | SuiKit Blog</title>
+<meta name="description" content="Sui 풀노드의 공개 JSON-RPC가 폐지되었습니다. 온체인 USDC 결제 검증을 유지한 정확한 GraphQL 마이그레이션 — 쿼리, 함정, 코드.">
+<link rel="canonical" href="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.ko.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sui 공개 JSON-RPC 폐지 — 결제 검증을 GraphQL로 마이그레이션">
+<meta property="og:description" content="Sui 풀노드의 공개 JSON-RPC가 폐지되었습니다. 온체인 USDC 결제 검증을 유지한 정확한 GraphQL 마이그레이션.">
+<meta property="og:url" content="https://suikit.dev/blog/sui-jsonrpc-graphql-migration.ko.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Sui 공개 JSON-RPC 폐지 — 결제 검증을 GraphQL로 마이그레이션",
+  "description": "Sui 풀노드의 공개 JSON-RPC가 폐지되었습니다. 온체인 USDC 결제 검증을 유지한 정확한 GraphQL 마이그레이션.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "ko",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/sui-jsonrpc-graphql-migration.ko.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.ko.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.ko.html#what">키트</a>
+      <a href="/index.ko.html#inside">구성 내용</a>
+      <a href="/index.ko.html#faq">FAQ</a>
+      <a href="/blog/index.ko.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/sui-jsonrpc-graphql-migration.html">EN</option><option value="/blog/sui-jsonrpc-graphql-migration.pt.html">PT</option><option value="/blog/sui-jsonrpc-graphql-migration.ko.html" selected>KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">2026.11</time> · 엔지니어링 · 6분</p>
+  <h1>Sui 공개 JSON-RPC 폐지 — 결제 검증을 GraphQL로 마이그레이션</h1>
+
+  <p>SuiKit은 DeepBook V3 봇 키트에 대한 액세스를 판매합니다. 결제는 Sui 메인넷에서
+  100 USDC이며, Telegram 봇이 트랜잭션 digest를 온체인에서 검증한 뒤 구매자를 비공개
+  repo에 초대합니다. 어느 날 검증이 모든 요청에서 같은 메시지로 실패하기 시작했습니다:</p>
+
+  <pre><code>{&quot;error&quot;:{&quot;code&quot;:-32601,&quot;message&quot;:&quot;Method not found. JSON-RPC on public fullnodes has been deprecated.&quot;}}</code></pre>
+
+  <p>트랜잭션 자체는 정상이었습니다 — 확정됨, 성공, USDC 전달 완료. 죽은 것은 RPC
+  엔드포인트였습니다. 체인을 읽는 모든 것을 Sui GraphQL API
+  (<code>https://graphql.mainnet.sui.io/graphql</code>)로 옮겨야 했습니다. 이 글은
+  실제로 수행한 그 마이그레이션입니다.</p>
+
+  <h2>무엇이 깨졌나</h2>
+
+  <p>체크아웃 페이지와 봇에서 세 가지 JSON-RPC 메서드를 사용하고 있었습니다:</p>
+
+  <ul>
+    <li><code>sui_getTransactionBlock</code> — 결제 digest 검증(status + 잔액 변동)</li>
+    <li><code>suix_getCoins</code> — 결제 tx 구성 전 월렛의 USDC 코인 오브젝트 조회</li>
+    <li><code>suix_queryTransactionBlocks</code> — 연결된 월렛이 이미 결제했는지 감지</li>
+  </ul>
+
+  <h2>대체 쿼리</h2>
+
+  <p><strong>1. 결제 digest 검증</strong> — 가장 중요한 경로입니다. 봇은 tx의 상태와
+  잔액 변동 목록이 필요해 ≥100 USDC가 판매자 주소에 들어왔는지 확인합니다:</p>
+
+  <pre><code>query ($digest: String!) {
+  transaction(digest: $digest) {
+    digest
+    effects {
+      status
+      balanceChanges {
+        nodes {
+          owner { ... on AddressOwner { owner { address } } }
+          coinType { repr }
+          amount
+        }
+      }
+    }
+  }
+}</code></pre>
+
+  <p>검증 로직은 동일합니다: <code>effects.status == "SUCCESS"</code>, 이후
+  <code>coinType.repr</code>이 USDC 타입과 일치하고 owner 주소가 판매자와 같은
+  <code>balanceChanges</code>를 합산합니다. 입금액 ≥ 가격이면 유효한 digest입니다.</p>
+
+  <p><strong>2. 결제 tx용 USDC 코인 조회</strong> — <code>suix_getCoins</code>는 타입
+  필터가 있는 <code>objects</code> 쿼리가 됩니다:</p>
+
+  <pre><code>query ($owner: SuiAddress!, $type: String!) {
+  address(address: $owner) {
+    objects(filter: { type: $type }, first: 50) {
+      nodes { digest objectId version }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+}</code></pre>
+
+  <p><strong>3. 기존 결제 감지</strong> — <code>suix_queryTransactionBlocks</code>를
+  두 개의 필터를 가진 <code>transactions</code> 커넥션으로 교체합니다:</p>
+
+  <pre><code>transactions(filter: { sentAddress: $buyer, affectedAddress: $seller }, first: 50) {
+  nodes { digest effects { status balanceChanges { nodes { ... } } } }
+}</code></pre>
+
+  <h2>시간을 잡아먹은 함정</h2>
+
+  <ul>
+    <li><strong>필드명은 <code>transactionBlock</code>이 아니라 <code>transaction</code>입니다.</strong>
+    JSON-RPC 명명 습관은 <code>transactionBlock</code>으로 유도하지만, 스키마는
+    <code>transaction</code>과 <code>transactions</code>를 사용합니다.</li>
+    <li><strong>코인 타입 repr은 제로 패딩됩니다.</strong> <code>coinType.repr</code>과
+    <code>objects(type:)</code> 필터는 정규 패딩 형식 —
+    <code>0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin&lt;…&gt;</code>
+    — 을 사용하며, Move에서 쓰는 짧은 <code>0x2::coin::Coin</code>이 아닙니다.
+    <code>::usdc::USDC</code> 접미사로 비교하거나 주소를 패딩한 뒤 비교하세요.</li>
+    <li><strong>페이지네이션은 Relay 방식입니다.</strong> 모든 것이
+    <code>nodes { … } pageInfo { hasNextPage endCursor }</code>입니다. USDC 코인이
+    많은 월렛은 <code>hasNextPage</code>로 반복하세요.</li>
+    <li><strong>인덱싱 지연이 있습니다.</strong> broadcast 직후 digest가 몇 초간 404를
+    반환할 수 있습니다 — JSON-RPC와 동일합니다. 빠르게 실패하지 말고 백오프로
+    폴링하세요.</li>
+  </ul>
+
+  <h2>결과</h2>
+
+  <p>검증은 그대로, 전송 계층만 새로워졌습니다. 봇이 digest 검증 → GitHub 사용자명
+  요청 → 비공개 repo 초대까지 GraphQL만으로 end-to-end로 동작합니다.
+  <code>fullnode.*.sui.io</code>의 JSON-RPC를 아직 호출 중이라면 우리처럼 조용히 죽을
+  것입니다 — 지금 코드베이스에서 <code>sui_</code>/<code>suix_</code> 메서드명을
+  검색해 보세요.</p>
+
+  <p class="post-outro">SuiKit은 DeepBook V3 봇 소스 키트입니다 — 이런 결제 검증이
+  포함되어 있습니다. <a href="/index.ko.html">키트 보기 →</a></p>
+
+  <a class="post-back" href="/blog/index.ko.html">← 모든 글로 돌아가기</a>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.ko.html#what">키트</a>
+        <a href="/index.ko.html#inside">구성 내용</a>
+        <a href="/index.ko.html#get">액세스 받기</a>
+        <a href="/blog/index.ko.html">Blog</a>
+      </div>
+      <div>
+        <h4>프로토콜</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>네트워크</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>법적 고지</h4>
+        <a href="/legal.ko.html">약관 &amp; 개인정보</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · 비공개 repo 액세스</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">계속하려면 Sui 월렛을 선택하세요.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">결제 계정 <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">한 건의 트랜잭션에 서명합니다: <strong>$100 USDC → 판매자</strong>. gas는 평소처럼 월렛의 SUI로 지불됩니다.</p>
+      <button class="btn btn-ink" id="pay-btn">$100 USDC 결제</button>
+      <p class="sec-note">🔒 서명은 이 USDC 전송에만 적용됩니다.<br>시드 문구는 절대 공유하지 마세요 — 저희는 요구하지 않습니다.</p>
+      <button class="link-btn" id="pay-back">← 다른 월렛 선택</button>
+      <p class="muted small">다른 월렛에서 이미 결제했다면 digest를
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>에 보내주세요 — 다시 결제할 필요 없습니다.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>결제가 전송되었습니다.</strong></p>
+      <p class="muted small">트랜잭션 digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">복사</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">suiscan에서 보기 ↗</a>
+      </div>
+      <div class="done-note">
+        <p>액세스를 완료하려면 Telegram 봇을 여세요 — digest가 자동으로 첨부됩니다. 결제를 검증한 뒤
+        <strong>GitHub 사용자명</strong> (선택적으로 <strong>이메일</strong>
+        도 함께 — 우선 초대용)을 물어봅니다. 초대는 보통 1분 이내에 도착합니다. 문제가 생기면 봇에 메시지를 보내세요 — 사람이 확인합니다.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram 봇 열기 →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>문제가 발생했습니다</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">다시 시도</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">연결됨: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">연결 해제</button>
+    </div>
+    <p class="pay-foot">결제는 판매자 주소로 온체인 정산됩니다. 커스터디도, 카드 데이터도 없습니다. 서명을 요청하는 것은 USDC 전송뿐 — 시드 문구나 개인키는 절대 요구하지 않습니다.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

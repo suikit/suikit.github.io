@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>블로그 — SuiKit</title>
+<meta name="description" content="Engineering notes from building a DeepBook V3 bot kit on Sui — payment verification, on-chain edge cases, and production fixes.">
+<link rel="canonical" href="https://suikit.dev/blog/index.ko.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.ko.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.ko.html#what">키트</a>
+      <a href="/index.ko.html#inside">구성 내용</a>
+      <a href="/index.ko.html#faq">FAQ</a>
+      <a href="/blog/index.ko.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/index.html">EN</option><option value="/blog/index.pt.html">PT</option><option value="/blog/index.ko.html" selected>KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="blog-hero">
+  <div class="container">
+    <div class="kicker">BLOG</div>
+    <h1 class="blog-h1">엔지니어링 노트.</h1>
+    <p class="blog-sub">DeepBook V3 봇 키트를 실제로 출시하기까지 — 결제 검증, 온체인 엣지 케이스, 프로덕션 수정 기록. 수익 이야기 없이 코드만 다룹니다.</p>
+  </div>
+</header>
+
+<main class="container">
+  <ul class="post-list">
+    <li>
+      <a href="/blog/what-is-suikit-how-to-buy.ko.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">SuiKit이란 — 그리고 구매 방법</div>
+        <p class="post-excerpt">Sui의 DeepBook V3용 소스 공개 개발 키트. 무엇을 받는지, 무엇이 아닌지, 구매 절차를 단계별로 설명합니다.</p>
+      </a>
+    </li>
+    <li>
+      <a href="/blog/sui-jsonrpc-graphql-migration.ko.html">
+        <span class="post-date">Nov 2026</span>
+        <div class="post-title">Sui 공개 JSON-RPC 폐지 — 결제 검증을 GraphQL로 마이그레이션</div>
+        <p class="post-excerpt">풀필먼트 봇이 하룻밤 사이에 “Method not found”를 반환하기 시작했습니다. Sui 풀노드의 공개 JSON-RPC가 폐지되었고, 이를 해결한 정확한 GraphQL 마이그레이션을 소개합니다.</p>
+      </a>
+    </li>
+  </ul>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.ko.html#what">키트</a>
+        <a href="/index.ko.html#inside">구성 내용</a>
+        <a href="/index.ko.html#get">액세스 받기</a>
+        <a href="/blog/index.ko.html">Blog</a>
+      </div>
+      <div>
+        <h4>프로토콜</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>네트워크</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>법적 고지</h4>
+        <a href="/legal.html">약관 &amp; 개인정보</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · 비공개 repo 액세스</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">계속하려면 Sui 월렛을 선택하세요.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">결제 계정 <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">한 건의 트랜잭션에 서명합니다: <strong>$100 USDC → 판매자</strong>. gas는 평소처럼 월렛의 SUI로 지불됩니다.</p>
+      <button class="btn btn-ink" id="pay-btn">$100 USDC 결제</button>
+      <p class="sec-note">🔒 서명은 이 USDC 전송에만 적용됩니다.<br>시드 문구는 절대 공유하지 마세요 — 저희는 요구하지 않습니다.</p>
+      <button class="link-btn" id="pay-back">← 다른 월렛 선택</button>
+      <p class="muted small">다른 월렛에서 이미 결제했다면 digest를
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>에 보내주세요 — 다시 결제할 필요 없습니다.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>결제가 전송되었습니다.</strong></p>
+      <p class="muted small">트랜잭션 digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">복사</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">suiscan에서 보기 ↗</a>
+      </div>
+      <div class="done-note">
+        <p>액세스를 완료하려면 Telegram 봇을 여세요 — digest가 자동으로 첨부됩니다. 결제를 검증한 뒤
+        <strong>GitHub 사용자명</strong> (선택적으로 <strong>이메일</strong>
+        도 함께 — 우선 초대용)을 물어봅니다. 초대는 보통 1분 이내에 도착합니다. 문제가 생기면 봇에 메시지를 보내세요 — 사람이 확인합니다.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram 봇 열기 →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>문제가 발생했습니다</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">다시 시도</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">연결됨: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">연결 해제</button>
+    </div>
+    <p class="pay-foot">결제는 판매자 주소로 온체인 정산됩니다. 커스터디도, 카드 데이터도 없습니다. 서명을 요청하는 것은 USDC 전송뿐 — 시드 문구나 개인키는 절대 요구하지 않습니다.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
