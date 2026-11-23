@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepBook V3 MoveAbort code 3 — the silent pay_with_deep failure every bot hits | SuiKit Blog</title>
+<meta name="description" content="Your limit order aborts with MoveAbort code 3 and no useful message. It is almost always an insufficient or locked DEEP fee balance — here is how to detect it and the pay_with_deep=false fallback that fixed our bot.">
+<link rel="canonical" href="https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeepBook V3 MoveAbort code 3 — the silent pay_with_deep failure every bot hits">
+<meta property="og:description" content="Your limit order aborts with MoveAbort code 3 and no useful message. It is almost always an insufficient or locked DEEP fee balance — here is how to detect it and the pay_with_deep=false fallback that fixed our bot.">
+<meta property="og:url" content="https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DeepBook V3 MoveAbort code 3 — the silent pay_with_deep failure every bot hits",
+  "description": "Your limit order aborts with MoveAbort code 3 and no useful message. It is almost always an insufficient or locked DEEP fee balance — here is how to detect it and the pay_with_deep=false fallback that fixed our bot.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "en",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/#what">The Kit</a>
+      <a href="/#inside">Inside</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/deepbook-moveabort-paywithdeep.html" selected>EN</option><option value="/blog/deepbook-moveabort-paywithdeep.pt.html">PT</option><option value="/blog/deepbook-moveabort-paywithdeep.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-23">Nov 2026</time> · Engineering · 5 min read</p>
+  <h1>DeepBook V3 MoveAbort code 3 — the silent <code>pay_with_deep</code> failure every bot hits</h1>
+
+  <p>You place a limit order on DeepBook V3. The transaction aborts with
+  <code>MoveAbort ... 3</code> somewhere inside the pool module. No error string, no
+  hint — just a numeric code that tells you nothing. If you run a bot, this is the
+  single most common way an order silently fails.</p>
+
+  <h2>What code 3 actually means</h2>
+
+  <p>DeepBook V3 can charge trading fees in <strong>DEEP</strong> tokens or in the
+  pool's quote/base coin. The choice is a flag on the order call:</p>
+
+  <pre><code>tx.moveCall({
+  target: `${DEEPBOOK_PACKAGE}::pool::place_limit_order`,
+  arguments: [ pool, balanceManager, /* …, */ payWithDeep /* bool */, /* … */ ],
+});</code></pre>
+
+  <p>With <code>pay_with_deep = true</code> the fee is pulled from the DEEP balance
+  held by your <strong>BalanceManager</strong> — the on-chain object your funds sit
+  in for trading. The abort fires when that balance can't cover the fee:</p>
+
+  <ul>
+    <li><strong>Not enough DEEP at all.</strong> You funded the manager with SUI and
+    USDC but never deposited DEEP — a very easy miss on a fresh setup.</li>
+    <li><strong>DEEP exists but is locked.</strong> Open orders lock balances,
+    including DEEP already committed to fees on other orders. Free DEEP ≠ total
+    DEEP. Your manager can hold 50 DEEP and still fail a 0.5 DEEP fee.</li>
+  </ul>
+
+  <p>That second case is the nasty one: the bot works for days, then starts
+  aborting as open orders accumulate and lock more DEEP. Nothing in your code
+  changed — the balance just crossed under the fee line.</p>
+
+  <h2>Detect it before the abort</h2>
+
+  <p>The fix we ship is a preflight check plus an automatic fallback:</p>
+
+  <pre><code>// before building the order tx
+const deep = await manager.balances(DEEP_TYPE);           // { free, locked }
+const feeEstimate = estDeepFee(order);                    // from pool fee params
+const payWithDeep = deep.free &gt; feeEstimate * SAFETY;    // e.g. 3x buffer
+
+if (!payWithDeep) {
+  // pay fees in the pool coin instead — order still goes through
+}</code></pre>
+
+  <p>Flip <code>pay_with_deep = false</code> and the same order succeeds, with the
+  fee charged against the order's own proceeds (quote/base coin of the pool). The
+  fee is slightly different in asset terms, but the order exists — which beats a
+  clean abort every time.</p>
+
+  <h2>Operational rules we landed on</h2>
+
+  <ul>
+    <li><strong>Keep a DEEP buffer.</strong> Hold ~3× the expected open-order fee
+    load in the manager so <code>pay_with_deep=true</code> stays viable (DEEP fees
+    can be cheaper depending on the pool).</li>
+    <li><strong>Never hard-code the flag.</strong> Evaluate it per order against the
+    <em>free</em> balance, not the total.</li>
+    <li><strong>Log which path was taken.</strong> "placed @ X (deep)" vs
+    "(pool-coin)" makes later PnL/fee accounting much easier.</li>
+    <li><strong>Watch locked, not just free.</strong> If aborts start after weeks of
+    uptime, check <em>locked</em> DEEP first — accumulated open orders are the
+    usual suspect.</li>
+  </ul>
+
+  <h2>Result</h2>
+
+  <p>One preflight check turned the most common silent failure into a non-event:
+  the bot detects the shortfall, flips the fee asset, and the order still lands.
+  If your DeepBook bot aborts with code 3, check the manager's <em>free</em> DEEP
+  before you check anything else.</p>
+
+  <p class="post-outro">SuiKit is a DeepBook V3 bot source kit — the preflight check and the automatic <code>pay_with_deep</code> fallback described here ship in the box. <a href="/">See the kit →</a></p>
+  <p><a href="/blog/">← Back to all posts</a></p>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/#what">The Kit</a>
+        <a href="/#inside">What's inside</a>
+        <a href="/#get">Get access</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+      <p class="muted small">Already paid from a different wallet? Just send the
+      digest to <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — no need to pay again.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, open our Telegram bot — your digest is attached
+        automatically. It verifies the payment and asks for your
+        <strong>GitHub username</strong> (optionally your <strong>email</strong>
+        for priority invites). The invite usually arrives within a minute.
+        If anything goes wrong, message the bot — a human reads it.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Open Telegram bot →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Connected: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">disconnect</button>
+    </div>
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script>
+</body>
+</html>
