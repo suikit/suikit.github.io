@@ -245,14 +245,38 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="why">
+  <div class="container">
+    <div class="kicker">왜 이 키트인가</div>
+    <h2>AI는 봇을 써줍니다.<br>하지만 튜닝 비용은 남습니다.</h2>
+    <p class="lead">코드 생성은 주말이면 초안을 줍니다. 하지만 줄 수 없는 것이 있습니다 — 초안을 실전 시장에서 살아남는 봇으로 바꾸는 수개월의 온체인 디버깅. 잠긴 잔액, abort 코드, 오래된 가격, gas 엣지 케이스. 이 키트는 이미 지불된 그 시간입니다. 이 repo를 AI 에이전트에 읽히면 추측이 아니라 검증된 답을 바탕으로 구현합니다 — 그것이 지름길입니다.</p>
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-label">처음부터<span>AI 코드 생성을 써도</span></div>
+        <div class="tl-bar">
+          <div class="tl-seg gen" style="flex:0 0 16%"><b>생성</b><i>약 1주</i></div>
+          <div class="tl-seg tune" style="flex:1"><b>온체인 디버깅 &amp; 튜닝</b><i>3–6개월</i></div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">SUIKIT 사용 시</div>
+        <div class="tl-bar">
+          <div class="tl-seg adapt" style="flex:0 0 34%"><b>읽고 적응</b><i>며칠</i></div>
+          <div class="tl-seg live" style="flex:1"><b>북에서 라이브</b><i>약 1–2주</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
   <div class="container">
     <div class="get">
       <div>
         <div class="kicker">포함 내용</div>
         <h2>전체 소스. 진짜 문서. 블랙박스 없음.</h2>
         <ul>
-          <li>전체 Node.js 코드베이스(약 10k LOC), 전 구간 영어 주석</li>
+          <li>전체 Node.js 코드베이스(약 15k LOC), 전 구간 영어 주석</li>
           <li>아키텍처 문서, 전략 명세, 주석 달린 <code>.env.example</code></li>
           <li>레퍼런스 전략: 변동성 하베스트 래더, 스나이퍼, 추세 추종</li>
           <li>연구 비교용 Python 섀도 커미티(선택 사항)</li>
@@ -262,15 +286,49 @@
       </div>
       <div class="code-frame">
         <div class="bar"><i></i><i></i><i></i></div>
-        <div><span class="dim">$</span> npm ci && npm test</div>
-        <div><span class="ok"># tests 31 · pass 31</span></div>
-        <div><span class="dim">$</span> cp .env.example .env</div>
-        <div><span class="dim"># set SUI_PRIVATE_KEY, BALANCE_MANAGER_ID</span></div>
-        <div><span class="dim">$</span> node scripts/verify_grpc.mjs</div>
-        <div><span class="ok"># gRPC connected · manager found</span></div>
-        <div><span class="dim">$</span> npm start</div>
-        <div><span class="ok"># bot_deepbook → DeepBook V3 · SUI/USDC</span></div>
+<div><span class="dim">$</span> tree -L 2</div>
+<div><span class="ok">Sui_kit/</span></div>
+<div>├── bot_deepbook.mjs        <span class="ok"># 엔진 · 2.8k LOC</span></div>
+<div>├── src/</div>
+<div>│   ├── services/          <span class="dim"># DeepBook · LLM 브리지 · TG</span></div>
+<div>│   ├── agent/             <span class="dim"># regime · 리스크 · 리포트</span></div>
+<div>│   ├── strategies/        <span class="dim"># ladder · profit-max</span></div>
+<div>│   ├── lib/               <span class="dim"># suiClient · policy · logging</span></div>
+<div>│   └── prediction/        <span class="dim"># predictor + 4 analyzers</span></div>
+<div>├── crew_trader/           <span class="dim"># Python 섀도 위원회</span></div>
+<div>├── scripts/               <span class="dim"># 점검 · 검증 · kill-switch</span></div>
+<div>├── tests/                 <span class="dim"># spec 9개 파일</span></div>
+<div>└── docs/                  <span class="dim"># 아키텍처 · 셋업</span></div>
       </div>
+    </div>
+    <div class="code-block">
+      <div>
+        <div class="kicker">실제 코드</div>
+        <h2>Real code, not a mockup.</h2>
+        <p>저장소에서 그대로 가져온 실제 코드입니다 — 마케팅용으로 다듬지
+  않았습니다. 봇은 취소와 주문을 하나의 트랜잭션으로 묶어 호출 사이의
+  빈틈을 없앴고, 하이라이트된 줄은 DeepBook V3에서 가장 흔한 조용한 주문
+  실패에 대한 워크어라운드입니다.
+  <a href="/blog/deepbook-moveabort-paywithdeep.ko.html">이 플래그가 존재하는 이유 →</a></p>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div><span class="dim">// src/services/DeepBookService.js — excerpt</span></div>
+        <div><span class="k">for</span> (<span class="k">const</span> order <span class="k">of</span> allOrders) {</div>
+        <div>&nbsp;&nbsp;tx.moveCall({</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;target: `${PKG}::pool::place_limit_order`,</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;arguments: [</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object(config.id), managerObj, proof,</div>
+        <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* clientOrderId · expType · price · qty · side */</span></div>
+        <div><span class="ok">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.bool(false), // pay_with_deep=false: avoids code=3 on insufficient DEEP</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.u64(orderTtl),  <span class="dim">// 7-day order TTL</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object('0x6')        <span class="dim">// Clock</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;],</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;typeArguments: [config.baseType, config.quoteType]</div>
+        <div>&nbsp;&nbsp;});</div>
+        <div>}</div>
+      </div>
+    </div>
     </div>
   </div>
 </section>
@@ -303,31 +361,7 @@
 </section>
 
 
-<section class="section" id="why">
-  <div class="container">
-    <div class="kicker">왜 이 키트인가</div>
-    <h2>AI는 봇을 써줍니다.<br>하지만 튜닝 비용은 남습니다.</h2>
-    <p class="lead">코드 생성은 주말이면 초안을 줍니다. 하지만 줄 수 없는 것이 있습니다 — 초안을 실전 시장에서 살아남는 봇으로 바꾸는 수개월의 온체인 디버깅. 잠긴 잔액, abort 코드, 오래된 가격, gas 엣지 케이스. 이 키트는 이미 지불된 그 시간입니다. 이 repo를 AI 에이전트에 읽히면 추측이 아니라 검증된 답을 바탕으로 구현합니다 — 그것이 지름길입니다.</p>
-    <div class="tl">
-      <div class="tl-row">
-        <div class="tl-label">처음부터<span>AI 코드 생성을 써도</span></div>
-        <div class="tl-bar">
-          <div class="tl-seg gen" style="flex:0 0 16%"><b>생성</b><i>약 1주</i></div>
-          <div class="tl-seg tune" style="flex:1"><b>온체인 디버깅 &amp; 튜닝</b><i>3–6개월</i></div>
-        </div>
-      </div>
-      <div class="tl-row">
-        <div class="tl-label">SUIKIT 사용 시</div>
-        <div class="tl-bar">
-          <div class="tl-seg adapt" style="flex:0 0 34%"><b>읽고 적응</b><i>며칠</i></div>
-          <div class="tl-seg live" style="flex:1"><b>북에서 라이브</b><i>약 1–2주</i></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="get">
+<section class="section alt" id="get">
   <div class="container pricing">
     <div>
       <div class="kicker">액세스</div>
@@ -348,7 +382,7 @@
   </div>
 </section>
 
-<section class="section alt" id="faq">
+<section class="section" id="faq">
   <div class="container">
     <div class="kicker">FAQ</div>
     <h2>솔직한 답변.</h2>
@@ -410,7 +444,7 @@
   </div>
 </section>
 
-<section class="section" id="news">
+<section class="section alt" id="news">
   <svg class="wm sui" data-plx="0.32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
   <svg class="wm db" data-plx="-0.24" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">

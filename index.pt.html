@@ -259,14 +259,43 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="why">
+  <div class="container">
+    <div class="kicker">Por que este kit</div>
+    <h2>A IA escreve o bot.<br>O tuning você ainda paga.</h2>
+    <p class="lead">Geração de código entrega um rascunho em um fim de semana.
+    O que ela não entrega são os meses de depuração on-chain que transformam um
+    rascunho em um bot que sobrevive ao mercado real — saldos bloqueados, códigos
+    de abort, preços obsoletos, casos extremos de gas. Este kit é esse tempo,
+    já investido. Entregue o repositório ao seu agente de IA e ele constrói em
+    cima de respostas que funcionam, não de suposições — esse é o atalho.</p>
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-label">DO ZERO<span>mesmo com codegen por IA</span></div>
+        <div class="tl-bar">
+          <div class="tl-seg gen" style="flex:0 0 16%"><b>gerar</b><i>~1 semana</i></div>
+          <div class="tl-seg tune" style="flex:1"><b>debugar &amp; ajustar on-chain</b><i>3–6 meses</i></div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">COM SUIKIT</div>
+        <div class="tl-bar">
+          <div class="tl-seg adapt" style="flex:0 0 34%"><b>ler &amp; adaptar</b><i>dias</i></div>
+          <div class="tl-seg live" style="flex:1"><b>no ar no book</b><i>~1–2 semanas</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
   <div class="container">
     <div class="get">
       <div>
         <div class="kicker">O que você recebe</div>
         <h2>Código completo. Documentação real. Sem caixa-preta.</h2>
         <ul>
-          <li>Codebase completo em Node.js (~10k LOC) com comentários em inglês</li>
+          <li>Codebase completo em Node.js (~15k LOC) com comentários em inglês</li>
           <li>Documento de arquitetura, especificação de estratégia e <code>.env.example</code> anotado</li>
           <li>Estratégias de referência: ladder de volatility-harvest, sniper, trend-follow</li>
           <li>Comitê shadow em Python para comparações de pesquisa (opcional)</li>
@@ -276,15 +305,49 @@
       </div>
       <div class="code-frame">
         <div class="bar"><i></i><i></i><i></i></div>
-        <div><span class="dim">$</span> npm ci && npm test</div>
-        <div><span class="ok"># tests 31 · pass 31</span></div>
-        <div><span class="dim">$</span> cp .env.example .env</div>
-        <div><span class="dim"># set SUI_PRIVATE_KEY, BALANCE_MANAGER_ID</span></div>
-        <div><span class="dim">$</span> node scripts/verify_grpc.mjs</div>
-        <div><span class="ok"># gRPC connected · manager found</span></div>
-        <div><span class="dim">$</span> npm start</div>
-        <div><span class="ok"># bot_deepbook → DeepBook V3 · SUI/USDC</span></div>
+<div><span class="dim">$</span> tree -L 2</div>
+<div><span class="ok">Sui_kit/</span></div>
+<div>├── bot_deepbook.mjs        <span class="ok"># motor · 2,8k LOC</span></div>
+<div>├── src/</div>
+<div>│   ├── services/          <span class="dim"># DeepBook · ponte LLM · TG</span></div>
+<div>│   ├── agent/             <span class="dim"># regime · risco · reports</span></div>
+<div>│   ├── strategies/        <span class="dim"># ladder · profit-max</span></div>
+<div>│   ├── lib/               <span class="dim"># suiClient · policy · logging</span></div>
+<div>│   └── prediction/        <span class="dim"># predictor + 4 analyzers</span></div>
+<div>├── crew_trader/           <span class="dim"># comitê sombra em Python</span></div>
+<div>├── scripts/               <span class="dim"># inspeção · verif. · kill-switch</span></div>
+<div>├── tests/                 <span class="dim"># 9 arquivos spec</span></div>
+<div>└── docs/                  <span class="dim"># arquitetura · setup</span></div>
       </div>
+    </div>
+    <div class="code-block">
+      <div>
+        <div class="kicker">O código de verdade</div>
+        <h2>Real code, not a mockup.</h2>
+        <p>Um trecho real do repositório — nada encenado, nada maquiado para
+  marketing. O bot cancela e coloca ordens numa única transação, para nada
+  ser explorado entre chamadas; a linha destacada é o workaround para a
+  falha silenciosa de ordem mais comum no DeepBook V3.
+  <a href="/blog/deepbook-moveabort-paywithdeep.pt.html">Por que esse flag existe →</a></p>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div><span class="dim">// src/services/DeepBookService.js — excerpt</span></div>
+        <div><span class="k">for</span> (<span class="k">const</span> order <span class="k">of</span> allOrders) {</div>
+        <div>&nbsp;&nbsp;tx.moveCall({</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;target: `${PKG}::pool::place_limit_order`,</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;arguments: [</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object(config.id), managerObj, proof,</div>
+        <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* clientOrderId · expType · price · qty · side */</span></div>
+        <div><span class="ok">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.bool(false), // pay_with_deep=false: avoids code=3 on insufficient DEEP</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.u64(orderTtl),  <span class="dim">// 7-day order TTL</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object('0x6')        <span class="dim">// Clock</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;],</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;typeArguments: [config.baseType, config.quoteType]</div>
+        <div>&nbsp;&nbsp;});</div>
+        <div>}</div>
+      </div>
+    </div>
     </div>
   </div>
 </section>
@@ -317,36 +380,7 @@
 </section>
 
 
-<section class="section" id="why">
-  <div class="container">
-    <div class="kicker">Por que este kit</div>
-    <h2>A IA escreve o bot.<br>O tuning você ainda paga.</h2>
-    <p class="lead">Geração de código entrega um rascunho em um fim de semana.
-    O que ela não entrega são os meses de depuração on-chain que transformam um
-    rascunho em um bot que sobrevive ao mercado real — saldos bloqueados, códigos
-    de abort, preços obsoletos, casos extremos de gas. Este kit é esse tempo,
-    já investido. Entregue o repositório ao seu agente de IA e ele constrói em
-    cima de respostas que funcionam, não de suposições — esse é o atalho.</p>
-    <div class="tl">
-      <div class="tl-row">
-        <div class="tl-label">DO ZERO<span>mesmo com codegen por IA</span></div>
-        <div class="tl-bar">
-          <div class="tl-seg gen" style="flex:0 0 16%"><b>gerar</b><i>~1 semana</i></div>
-          <div class="tl-seg tune" style="flex:1"><b>debugar &amp; ajustar on-chain</b><i>3–6 meses</i></div>
-        </div>
-      </div>
-      <div class="tl-row">
-        <div class="tl-label">COM SUIKIT</div>
-        <div class="tl-bar">
-          <div class="tl-seg adapt" style="flex:0 0 34%"><b>ler &amp; adaptar</b><i>dias</i></div>
-          <div class="tl-seg live" style="flex:1"><b>no ar no book</b><i>~1–2 semanas</i></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="get">
+<section class="section alt" id="get">
   <div class="container pricing">
     <div>
       <div class="kicker">Acesso</div>
@@ -369,7 +403,7 @@
   </div>
 </section>
 
-<section class="section alt" id="faq">
+<section class="section" id="faq">
   <div class="container">
     <div class="kicker">FAQ</div>
     <h2>Respostas diretas.</h2>
@@ -465,7 +499,7 @@
   </div>
 </section>
 
-<section class="section" id="news">
+<section class="section alt" id="news">
   <svg class="wm sui" data-plx="0.32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
   <svg class="wm db" data-plx="-0.24" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">

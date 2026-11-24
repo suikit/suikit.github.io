@@ -265,64 +265,6 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    <div class="get">
-      <div>
-        <div class="kicker">What you get</div>
-        <h2>Full source. Real docs. No black box.</h2>
-        <ul>
-          <li>Complete Node.js codebase (~10k LOC) with English comments throughout</li>
-          <li>Architecture doc, strategy spec, and annotated <code>.env.example</code></li>
-          <li>Reference strategies: volatility-harvest ladder, sniper, trend-follow</li>
-          <li>Python shadow-committee for research comparisons (optional)</li>
-          <li>Scripts: balance-manager inspector, gRPC verifier, kill-switch</li>
-          <li>Personal-use license — run it, read it, modify it</li>
-        </ul>
-      </div>
-      <div class="code-frame">
-        <div class="bar"><i></i><i></i><i></i></div>
-        <div><span class="dim">$</span> npm ci && npm test</div>
-        <div><span class="ok"># tests 31 · pass 31</span></div>
-        <div><span class="dim">$</span> cp .env.example .env</div>
-        <div><span class="dim"># set SUI_PRIVATE_KEY, BALANCE_MANAGER_ID</span></div>
-        <div><span class="dim">$</span> node scripts/verify_grpc.mjs</div>
-        <div><span class="ok"># gRPC connected · manager found</span></div>
-        <div><span class="dim">$</span> npm start</div>
-        <div><span class="ok"># bot_deepbook → DeepBook V3 · SUI/USDC</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section alt">
-  <div class="container">
-    <div class="kicker">Fit check</div>
-    <h2>Know what you're buying.</h2>
-    <div class="who">
-      <div class="panel yes">
-        <h3>This kit is for you if…</h3>
-        <ul>
-          <li>You write JavaScript and want to build on DeepBook V3 without rediscovering every edge case yourself.</li>
-          <li>You want a working BalanceManager execution reference — not a whitepaper.</li>
-          <li>You plan to write your own strategy on proven plumbing.</li>
-          <li>You run your own infra and want full control of keys, sizes, and gates.</li>
-        </ul>
-      </div>
-      <div class="panel no">
-        <h3>This kit is NOT…</h3>
-        <ul>
-          <li>A profitable trading system, signal service, or managed product.</li>
-          <li>Financial advice — nothing here says what to buy or sell.</li>
-          <li>A hosted bot — you run it, you own the risk, you hold the keys.</li>
-          <li>Resellable — the license is personal use, no redistribution.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-
 <section class="section" id="why">
   <div class="container">
     <div class="kicker">Why this kit</div>
@@ -352,7 +294,99 @@
   </div>
 </section>
 
-<section class="section" id="get">
+<section class="section alt">
+  <div class="container">
+    <div class="get">
+      <div>
+        <div class="kicker">What you get</div>
+        <h2>Full source. Real docs. No black box.</h2>
+        <ul>
+          <li>Complete Node.js codebase (~15k LOC) with English comments throughout</li>
+          <li>Architecture doc, strategy spec, and annotated <code>.env.example</code></li>
+          <li>Reference strategies: volatility-harvest ladder, sniper, trend-follow</li>
+          <li>Python shadow-committee for research comparisons (optional)</li>
+          <li>Scripts: balance-manager inspector, gRPC verifier, kill-switch</li>
+          <li>Personal-use license — run it, read it, modify it</li>
+        </ul>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+<div><span class="dim">$</span> tree -L 2</div>
+<div><span class="ok">Sui_kit/</span></div>
+<div>├── bot_deepbook.mjs        <span class="ok"># engine · 2.8k LOC</span></div>
+<div>├── src/</div>
+<div>│   ├── services/          <span class="dim"># DeepBook · LLM bridge · TG</span></div>
+<div>│   ├── agent/             <span class="dim"># regime · risk · reports</span></div>
+<div>│   ├── strategies/        <span class="dim"># ladder · profit-max</span></div>
+<div>│   ├── lib/               <span class="dim"># suiClient · policy · logging</span></div>
+<div>│   └── prediction/        <span class="dim"># predictor + 4 analyzers</span></div>
+<div>├── crew_trader/           <span class="dim"># Python shadow committee</span></div>
+<div>├── scripts/               <span class="dim"># inspect · verify · kill-switch</span></div>
+<div>├── tests/                 <span class="dim"># 9 spec files</span></div>
+<div>└── docs/                  <span class="dim"># architecture · setup</span></div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div>
+        <div class="kicker">The actual code</div>
+        <h2>Real code, not a mockup.</h2>
+        <p>A real excerpt from the repo — nothing staged, nothing cleaned up for
+  marketing. The bot cancels and places in a single transaction so nothing
+  can be gamed between calls, and the highlighted line is the workaround for
+  the most common silent order failure on DeepBook V3.
+  <a href="/blog/deepbook-moveabort-paywithdeep.html">Why that flag exists →</a></p>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div><span class="dim">// src/services/DeepBookService.js — excerpt</span></div>
+        <div><span class="k">for</span> (<span class="k">const</span> order <span class="k">of</span> allOrders) {</div>
+        <div>&nbsp;&nbsp;tx.moveCall({</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;target: `${PKG}::pool::place_limit_order`,</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;arguments: [</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object(config.id), managerObj, proof,</div>
+        <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* clientOrderId · expType · price · qty · side */</span></div>
+        <div><span class="ok">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.bool(false), // pay_with_deep=false: avoids code=3 on insufficient DEEP</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.pure.u64(orderTtl),  <span class="dim">// 7-day order TTL</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tx.object('0x6')        <span class="dim">// Clock</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;],</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;typeArguments: [config.baseType, config.quoteType]</div>
+        <div>&nbsp;&nbsp;});</div>
+        <div>}</div>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="kicker">Fit check</div>
+    <h2>Know what you're buying.</h2>
+    <div class="who">
+      <div class="panel yes">
+        <h3>This kit is for you if…</h3>
+        <ul>
+          <li>You write JavaScript and want to build on DeepBook V3 without rediscovering every edge case yourself.</li>
+          <li>You want a working BalanceManager execution reference — not a whitepaper.</li>
+          <li>You plan to write your own strategy on proven plumbing.</li>
+          <li>You run your own infra and want full control of keys, sizes, and gates.</li>
+        </ul>
+      </div>
+      <div class="panel no">
+        <h3>This kit is NOT…</h3>
+        <ul>
+          <li>A profitable trading system, signal service, or managed product.</li>
+          <li>Financial advice — nothing here says what to buy or sell.</li>
+          <li>A hosted bot — you run it, you own the risk, you hold the keys.</li>
+          <li>Resellable — the license is personal use, no redistribution.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section alt" id="get">
   <div class="container pricing">
     <div>
       <div class="kicker">Access</div>
@@ -375,7 +409,7 @@
   </div>
 </section>
 
-<section class="section alt" id="faq">
+<section class="section" id="faq">
   <div class="container">
     <div class="kicker">FAQ</div>
     <h2>Straight answers.</h2>
@@ -469,7 +503,7 @@
   </div>
 </section>
 
-<section class="section" id="news">
+<section class="section alt" id="news">
   <svg class="wm sui" data-plx="0.32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.636 10.009a7.16 7.16 0 0 1 1.565 4.474 7.2 7.2 0 0 1-1.608 4.53l-.087.106-.023-.135a7 7 0 0 0-.07-.349c-.502-2.21-2.142-4.106-4.84-5.642-1.823-1.034-2.866-2.278-3.14-3.693-.177-.915-.046-1.834.209-2.62.254-.787.631-1.446.953-1.843l1.05-1.284a.46.46 0 0 1 .713 0l5.28 6.456zm1.66-1.283L12.26.123a.336.336 0 0 0-.52 0L4.704 8.726l-.023.029a9.33 9.33 0 0 0-2.07 5.872C2.612 19.803 6.816 24 12 24s9.388-4.197 9.388-9.373a9.32 9.32 0 0 0-2.07-5.871zM6.389 9.981l.63-.77.018.142q.023.17.055.34c.408 2.136 1.862 3.917 4.294 5.297 2.114 1.203 3.345 2.586 3.7 4.103a5.3 5.3 0 0 1 .109 1.801l-.004.034-.03.014A7.2 7.2 0 0 1 12 21.67c-3.976 0-7.2-3.218-7.2-7.188 0-1.705.594-3.27 1.587-4.503z"/></svg>
   <svg class="wm db" data-plx="-0.24" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="15" height="3.2" rx="1.6"/><rect x="0" y="6.3" width="11" height="3.2" rx="1.6"/><rect x="0" y="12.6" width="7" height="3.2" rx="1.6"/><rect x="0" y="18.9" width="3" height="3.1" rx="1.55"/><rect x="27" y="0" width="3" height="3.2" rx="1.6"/><rect x="23" y="6.3" width="7" height="3.2" rx="1.6"/><rect x="19" y="12.6" width="11" height="3.2" rx="1.6"/><rect x="15" y="18.9" width="15" height="3.1" rx="1.55"/></svg>
   <div class="container">
