@@ -551,3 +551,4 @@ a.news-item:hover .news-body strong{color:var(--blue)}
 .code-block p a:hover{opacity:.65}
 .post p a, details p a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:3px;transition:opacity .15s}
 .post p a:hover, details p a:hover{opacity:.65}
+.foot-grid a svg{width:12px;height:12px;vertical-align:-1px;margin-right:6px;fill:currentColor}
