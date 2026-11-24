@@ -552,3 +552,5 @@ a.news-item:hover .news-body strong{color:var(--blue)}
 .post p a, details p a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:3px;transition:opacity .15s}
 .post p a:hover, details p a:hover{opacity:.65}
 .foot-grid a svg{width:12px;height:12px;vertical-align:-1px;margin-right:6px;fill:currentColor}
+
+.share{margin-top:32px;font-size:13.5px;color:#6a7390}
