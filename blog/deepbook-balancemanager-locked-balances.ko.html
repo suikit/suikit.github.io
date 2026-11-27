@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체 | SuiKit Blog</title>
+<meta name="description" content="지갑에는 자산이 있는데 봇은 잔액 부족으로 실패하고, 체결 금액은 돌아오지 않습니다. DeepBook V3에서 잔액은 BalanceManager 안의 세 가지 상태로 존재합니다. free·locked·settled의 실제 동작과, 자금을 계속 흐르게 하는 settled sweep 패턴을 정리했습니다.">
+<link rel="canonical" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체">
+<meta property="og:description" content="지갑에는 자산이 있는데 봇은 잔액 부족으로 실패하고, 체결 금액은 돌아오지 않습니다. DeepBook V3에서 잔액은 BalanceManager 안의 세 가지 상태로 존재합니다. free·locked·settled의 실제 동작과, 자금을 계속 흐르게 하는 settled sweep 패턴을 정리했습니다.">
+<meta property="og:url" content="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체",
+  "description": "지갑에는 자산이 있는데 봇은 잔액 부족으로 실패하고, 체결 금액은 돌아오지 않습니다. DeepBook V3에서 잔액은 BalanceManager 안의 세 가지 상태로 존재합니다. free·locked·settled의 실제 동작과, 자금을 계속 흐르게 하는 settled sweep 패턴을 정리했습니다.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "ko",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.ko.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.ko.html#what">키트</a>
+      <a href="/index.ko.html#inside">구성 내용</a>
+      <a href="/index.ko.html#faq">FAQ</a>
+      <a href="/blog/index.ko.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/deepbook-balancemanager-locked-balances.html">EN</option><option value="/blog/deepbook-balancemanager-locked-balances.pt.html">PT</option><option value="/blog/deepbook-balancemanager-locked-balances.ko.html" selected>KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>월렛 연결 &amp; 결제<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-27">Nov 2026</time> · 엔지니어링 · 6분 분량</p>
+  <h1>DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체</h1>
+
+  <p>봇이 지갑을 확인합니다: 1,000 SUI 준비 완료. 주문을 넣으면 — abort,
+  잔액 부족. 더 나쁜 경우도 있습니다: 주문이 체결되고 며칠이 지나도 대금이
+  돌아오지 않는 것입니다. 두 증상 모두 같은 오해에서 옵니다. DeepBook V3에서
+  트레이딩 자금은 지갑에 있지 않습니다. <strong>BalanceManager</strong>에
+  있으며, 세 가지 상태로 존재합니다.</p>
+
+  <h2>free, locked, settled</h2>
+
+  <p>BalanceManager는 주문을 뒷받침하는 자금을 담는 온체인 오브젝트입니다.
+  추적하는 모든 코인은 정확히 세 가지 상태 중 하나입니다:</p>
+
+  <ul>
+    <li><strong>Free</strong> — 사용 가능. 새 주문을 뒷받침하거나 지갑으로
+    출금 가능.</li>
+    <li><strong>Locked</strong> — 지금 미체결 주문에 묶여 있음. 소유는 여전히
+    당신이지만, 주문이 취소되거나 체결될 때까지 쓸 수 없습니다. free만 읽는
+    봇이 망가지는 지점입니다.</li>
+    <li><strong>Settled</strong> — 체결 대금이 림보에 쌓인 상태. locked도
+    아니고 free도 아닙니다: <code>withdraw_settled_amounts</code>를 명시적으로
+    호출하기 전까지 아무것도 움직이지 않습니다.</li>
+  </ul>
+
+  <h2>실전에서 망가지는 지점</h2>
+
+  <p><strong>1. free만 읽는 경우.</strong> free 잔액으로 주문 크기를 정하는
+  봇은 그리드 미체결 주문이 자금 대부분을 잠그면 영원히 축소된 크기로만
+  주문합니다. 반대로 total을 읽으면 이미 묶인 돈을 쓰려 합니다. 지갑이 아니라
+  미체결 주문 기준으로 free + locked를 재무장하세요.</p>
+
+  <p><strong>2. settled를 잊는 것.</strong> 조용한 누수입니다. 체결분은
+  settled 버킷에 쌓인 채 방치됩니다 — NAV는 정상인데 가용 잔액만 줄어듭니다.
+  해결책은 주문 관리와 같은 트랜잭션에서 settled를 회수하는 것입니다:</p>
+
+  <pre><code>// cancel + place와 같은 PTB 안에서
+tx.moveCall({
+  target: `${PKG}::pool::withdraw_settled_amounts`,
+  arguments: [tx.object(config.id), managerObj, proof],
+  typeArguments: [config.baseType, config.quoteType],
+});</code></pre>
+
+  <p><code>cancel_all → place_limit_order →
+  withdraw_settled_amounts</code>를 하나의 트랜잭션으로 묶으면 정산은 더 이상
+  문제가 되지 않습니다 — 리밸런스할 때마다 체결 대금이 자동으로 재순환됩니다.</p>
+
+  <p><strong>3. locked DEEP도 DEEP입니다.</strong> 수수료 잔액도 같은 규칙을
+  따릅니다 — 미체결 주문의 수수료로 잡힌 DEEP은 locked로 계산되므로, 50 DEEP를
+  가진 매니저가 0.5 DEEP 수수료로
+  <a href="/blog/deepbook-moveabort-paywithdeep.ko.html">MoveAbort code 3</a>를
+  맞을 수 있습니다.</p>
+
+  <p><strong>4. 다른 풀에 묶인 자금.</strong> 더 이상 운영하지 않는 풀의 미체결
+  주문은 담보를 계속 잠급니다. 주기적인 "위성 풀 정리" — 비핵심 풀의 오래된
+  주문 취소와 출금 — 은 엣지 케이스가 아니라 필수 운영입니다.</p>
+
+  <h2>우리가 정착시킨 운영 규칙</h2>
+
+  <ul>
+    <li><strong>크기는 free 기준, 검증은 미체결 주문 기준.</strong> 진실의
+    소스는 지갑이 아니라 매니저 상태입니다.</li>
+    <li><strong>settled 회수는 cancel+place와 같은 tx에서</strong> — 별도
+    주기 작업으로 두면 건너뜁니다.</li>
+    <li><strong>리스크 관점에서 locked는 사용된 돈으로 취급:</strong> 언제든
+    체결될 수 있는 주문을 뒷받침합니다.</li>
+    <li><strong>위성 풀은 스케줄로 정리,</strong> 이탈을 발견하고 나서가 아니라.</li>
+  </ul>
+
+  <h2>결과</h2>
+
+  <p>settled가 자동으로 회수되고 주문 크기가 실제 free 잔액 기준으로 정해지면,
+  "사라진 돈" 버그는 완전히 사라집니다 — 매니저의 상태 머신은 명세대로 정확히
+  동작하며, 봇은 세 개의 컬럼을 모두 읽기만 하면 됩니다.</p>
+  <p class="post-outro">SuiKit은 DeepBook V3 봇 소스 키트입니다 — 여기서 설명한 settled 회수, 위성 풀 정리, 잔액 재무장이 그대로 포함되어 있습니다. <a href="/">키트 보기 →</a></p>
+  <p><a href="/blog/index.ko.html">← 모든 글로 돌아가기</a></p>
+  <p class="share">공유: <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsuikit.dev%2Fblog%2Fdeepbook-balancemanager-locked-balances.ko.html&text=DeepBook+V3+BalanceManager+%E2%80%94+free%C2%B7locked%C2%B7settled%2C+%EC%9E%94%EC%95%A1%EC%9D%98+%EC%8B%A4%EC%B2%B4" target="_blank" rel="noopener">X</a></p>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.ko.html#what">키트</a>
+        <a href="/index.ko.html#inside">구성 내용</a>
+        <a href="/index.ko.html#get">액세스 받기</a>
+        <a href="/blog/index.ko.html">Blog</a>
+      </div>
+      <div>
+        <h4>프로토콜</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>네트워크</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+        <a href="mailto:contact@suikit.dev">contact@suikit.dev</a>
+        <a href="https://x.com/suikit_dev" target="_blank" rel="noopener">X</a>
+      </div>
+      <div>
+        <h4>법적 고지</h4>
+        <a href="/legal.ko.html">약관 &amp; 개인정보</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · 비공개 repo 액세스</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">계속하려면 Sui 월렛을 선택하세요.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">결제 계정 <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">한 건의 트랜잭션에 서명합니다: <strong>$100 USDC → 판매자</strong>. gas는 평소처럼 월렛의 SUI로 지불됩니다.</p>
+      <button class="btn btn-ink" id="pay-btn">$100 USDC 결제</button>
+      <p class="sec-note">🔒 서명은 이 USDC 전송에만 적용됩니다.<br>시드 문구는 절대 공유하지 마세요 — 저희는 요구하지 않습니다.</p>
+      <button class="link-btn" id="pay-back">← 다른 월렛 선택</button>
+      <p class="muted small">다른 월렛에서 이미 결제했다면 digest를
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a>에 보내주세요 — 다시 결제할 필요 없습니다.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>결제가 전송되었습니다.</strong></p>
+      <p class="muted small">트랜잭션 digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">복사</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">suiscan에서 보기 ↗</a>
+      </div>
+      <div class="done-note">
+        <p>액세스를 완료하려면 Telegram 봇을 여세요 — digest가 자동으로 첨부됩니다. 결제를 검증한 뒤
+        <strong>GitHub 사용자명</strong> (선택적으로 <strong>이메일</strong>
+        도 함께 — 우선 초대용)을 물어봅니다. 초대는 보통 1분 이내에 도착합니다. 문제가 생기면 봇에 메시지를 보내세요 — 사람이 확인합니다.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram 봇 열기 →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>문제가 발생했습니다</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">다시 시도</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">연결됨: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">연결 해제</button>
+    </div>
+    <p class="pay-foot">결제는 판매자 주소로 온체인 정산됩니다. 커스터디도, 카드 데이터도 없습니다. 서명을 요청하는 것은 USDC 전송뿐 — 시드 문구나 개인키는 절대 요구하지 않습니다.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

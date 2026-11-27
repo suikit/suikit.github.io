@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepBook V3 BalanceManager — free vs locked vs settled, and where your balance actually is | SuiKit Blog</title>
+<meta name="description" content="Your wallet shows the funds, but your bot aborts with insufficient balance — or fills never come back. On DeepBook V3 your balance lives in a BalanceManager with three states. How free, locked, and settled actually work, and the settled-sweep pattern that keeps funds moving.">
+<link rel="canonical" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeepBook V3 BalanceManager — free vs locked vs settled, and where your balance actually is">
+<meta property="og:description" content="Your wallet shows the funds, but your bot aborts with insufficient balance — or fills never come back. On DeepBook V3 your balance lives in a BalanceManager with three states. How free, locked, and settled actually work, and the settled-sweep pattern that keeps funds moving.">
+<meta property="og:url" content="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DeepBook V3 BalanceManager — free vs locked vs settled, and where your balance actually is",
+  "description": "Your wallet shows the funds, but your bot aborts with insufficient balance — or fills never come back. On DeepBook V3 your balance lives in a BalanceManager with three states. How free, locked, and settled actually work, and the settled-sweep pattern that keeps funds moving.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "en",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/#what">The Kit</a>
+      <a href="/#inside">Inside</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/deepbook-balancemanager-locked-balances.html" selected>EN</option><option value="/blog/deepbook-balancemanager-locked-balances.pt.html">PT</option><option value="/blog/deepbook-balancemanager-locked-balances.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Connect Wallet &amp; Pay<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-27">Nov 2026</time> · Engineering · 6 min read</p>
+  <h1>DeepBook V3 BalanceManager — free vs locked vs settled, and where your balance actually is</h1>
+
+  <p>Your bot checks the wallet: 1,000 SUI ready. It places an order — abort,
+  insufficient balance. Or worse: orders fill, days pass, and the proceeds never
+  seem to come back. Both symptoms come from the same misunderstanding: on
+  DeepBook V3 your trading funds don't live in your wallet. They live in a
+  <strong>BalanceManager</strong>, and they exist in three different states.</p>
+
+  <h2>Free, locked, settled</h2>
+
+  <p>A BalanceManager is the on-chain object that holds the funds your orders
+  are backed by. Every coin it tracks sits in exactly one of three states:</p>
+
+  <ul>
+    <li><strong>Free</strong> — available. Backs new orders, or can be withdrawn
+    to your wallet.</li>
+    <li><strong>Locked</strong> — committed to open orders right now. You still
+    own it, but it isn't spendable until those orders are cancelled or filled.
+    This is the state that breaks bots that only read free.</li>
+    <li><strong>Settled</strong> — proceeds of fills sitting in limbo. Not
+    locked, but not free either: nothing moves until you explicitly call
+    <code>withdraw_settled_amounts</code>.</li>
+  </ul>
+
+  <h2>Where it goes wrong in practice</h2>
+
+  <p><strong>1. Reading only free.</strong> A bot that sizes orders off the free
+  balance will under-size forever once a grid of open orders locks most of the
+  funds — and conversely, one that reads total balance will try to spend money
+  that's already committed. Reconcile free + locked against your open orders,
+  not against your wallet.</p>
+
+  <p><strong>2. Forgetting settled.</strong> This is the silent leak. Fills
+  accumulate in the settled bucket and just sit there — your NAV is fine but
+  your deployable balance keeps shrinking. The fix is to sweep settled funds in
+  the same transaction as your order management:</p>
+
+  <pre><code>// inside the same PTB as cancel + place
+tx.moveCall({
+  target: `${PKG}::pool::withdraw_settled_amounts`,
+  arguments: [tx.object(config.id), managerObj, proof],
+  typeArguments: [config.baseType, config.quoteType],
+});</code></pre>
+
+  <p>Chaining <code>cancel_all → place_limit_order →
+  withdraw_settled_amounts</code> in one transaction turns settlement into a
+  non-issue: every rebalance also recycles the proceeds of whatever filled.</p>
+
+  <p><strong>3. Locked DEEP is still DEEP.</strong> The fee balance is governed
+  by the same rules — DEEP committed to fee payment on open orders counts as
+  locked, which is why a manager holding 50 DEEP can still hit
+  <a href="/blog/deepbook-moveabort-paywithdeep.html">MoveAbort code 3</a> on a
+  0.5 DEEP fee.</p>
+
+  <p><strong>4. Funds stranded across pools.</strong> Open orders on a pool you
+  no longer trade keep their collateral locked. Periodic "satellite cleanup" —
+  cancel stale orders on non-core pools and withdraw — is required ops, not an
+  edge case.</p>
+
+  <h2>Operational rules we landed on</h2>
+
+  <ul>
+    <li><strong>Size against free, reconcile against open orders.</strong> The
+    manager state, not the wallet, is the source of truth.</li>
+    <li><strong>Sweep settled in the same tx</strong> as cancel+place — never as
+    a separate periodic job that can be skipped.</li>
+    <li><strong>Treat locked as spent</strong> for risk purposes: it's backing
+    orders that can fill.</li>
+    <li><strong>Clean up satellite pools on a schedule,</strong> not when you
+    notice drift.</li>
+  </ul>
+
+  <h2>Result</h2>
+
+  <p>Once settled funds are swept automatically and orders size against the
+  real free balance, "missing money" bugs disappear entirely — the manager's
+  state machine does exactly what it says, your bot just has to read all three
+  columns.</p>
+  <p class="post-outro">SuiKit is a DeepBook V3 bot source kit — the settled-sweep, satellite cleanup, and balance reconciliation described here ship in the box. <a href="/">See the kit →</a></p>
+  <p><a href="/blog/">← Back to all posts</a></p>
+  <p class="share">Share: <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsuikit.dev%2Fblog%2Fdeepbook-balancemanager-locked-balances.html&text=DeepBook+V3+BalanceManager+%E2%80%94+free+vs+locked+vs+settled%2C+and+where+your+balance+actually+is" target="_blank" rel="noopener">X</a></p>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/#what">The Kit</a>
+        <a href="/#inside">What's inside</a>
+        <a href="/#get">Get access</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+        <a href="mailto:contact@suikit.dev">contact@suikit.dev</a>
+        <a href="https://x.com/suikit_dev" target="_blank" rel="noopener">X</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.html">Terms &amp; Privacy</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pay with Sui wallet">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · private repo access</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Choose a Sui wallet to continue.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Paying as <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">You'll sign one transaction: <strong>$100 USDC → seller</strong>.
+      Gas is paid in SUI by your wallet as usual.</p>
+      <button class="btn btn-ink" id="pay-btn">Pay $100 USDC</button>
+      <p class="sec-note">🔒 Signature covers this USDC transfer only.<br>Never share your seed phrase — we never ask.</p>
+      <button class="link-btn" id="pay-back">← choose a different wallet</button>
+      <p class="muted small">Already paid from a different wallet? Just send the
+      digest to <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — no need to pay again.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Payment sent.</strong></p>
+      <p class="muted small">Transaction digest:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copy</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">view on suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>To finish access, open our Telegram bot — your digest is attached
+        automatically. It verifies the payment and asks for your
+        <strong>GitHub username</strong> (optionally your <strong>email</strong>
+        for priority invites). The invite usually arrives within a minute.
+        If anything goes wrong, message the bot — a human reads it.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Open Telegram bot →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Something went wrong</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">try again</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Connected: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">disconnect</button>
+    </div>
+    <p class="pay-foot">Payments settle on-chain to the seller's address. No custody, no card data.
+    We only ever request a signature for the USDC transfer — we will never ask
+    for your seed phrase or private key.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script>
+</body>
+</html>

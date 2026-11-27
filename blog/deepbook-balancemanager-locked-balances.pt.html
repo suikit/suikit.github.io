@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepBook V3 BalanceManager — livre vs bloqueado vs liquidado, e onde está seu saldo | SuiKit Blog</title>
+<meta name="description" content="Sua carteira mostra os fundos, mas seu bot aborta por saldo insuficiente — ou os fills nunca voltam. No DeepBook V3 seu saldo vive num BalanceManager com três estados. Como livre, bloqueado e liquidado funcionam, e o padrão de sweep que mantém os fundos fluindo.">
+<link rel="canonical" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.pt.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeepBook V3 BalanceManager — livre vs bloqueado vs liquidado, e onde está seu saldo">
+<meta property="og:description" content="Sua carteira mostra os fundos, mas seu bot aborta por saldo insuficiente — ou os fills nunca voltam. No DeepBook V3 seu saldo vive num BalanceManager com três estados. Como livre, bloqueado e liquidado funcionam, e o padrão de sweep que mantém os fundos fluindo.">
+<meta property="og:url" content="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.pt.html">
+<meta property="og:image" content="https://suikit.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DeepBook V3 BalanceManager — livre vs bloqueado vs liquidado, e onde está seu saldo",
+  "description": "Sua carteira mostra os fundos, mas seu bot aborta por saldo insuficiente — ou os fills nunca voltam. No DeepBook V3 seu saldo vive num BalanceManager com três estados. Como livre, bloqueado e liquidado funcionam, e o padrão de sweep que mantém os fundos fluindo.",
+  "datePublished": "2026-11-23",
+  "inLanguage": "pt-BR",
+  "image": "https://suikit.dev/og.png",
+  "mainEntityOfPage": "https://suikit.dev/blog/deepbook-balancemanager-locked-balances.pt.html",
+  "author": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SuiKit",
+    "url": "https://suikit.dev/"
+  },
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "SuiKit Blog",
+    "url": "https://suikit.dev/blog/"
+  }
+}
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/index.pt.html">Sui<span>Kit</span></a>
+    <div class="nav-links">
+      <a href="/index.pt.html#what">O Kit</a>
+      <a href="/index.pt.html#inside">Conteúdo</a>
+      <a href="/index.pt.html#faq">FAQ</a>
+      <a href="/blog/index.pt.html">Blog</a>
+      <select class="lang-dd" aria-label="Language" onchange="if(this.value)location.href=this.value"><option value="/blog/deepbook-balancemanager-locked-balances.html">EN</option><option value="/blog/deepbook-balancemanager-locked-balances.pt.html" selected>PT</option><option value="/blog/deepbook-balancemanager-locked-balances.ko.html">KO</option></select>
+      <a href="#" class="btn btn-white btn-nav" data-open-pay>Conectar Carteira e Pagar<span class="cta-price"> — $100</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="post container">
+  <p class="post-meta"><time datetime="2026-11-27">Nov 2026</time> · Engenharia · 6 min de leitura</p>
+  <h1>DeepBook V3 BalanceManager — livre vs bloqueado vs liquidado, e onde está seu saldo</h1>
+
+  <p>Seu bot checa a carteira: 1.000 SUI prontos. Envia a ordem — abort, saldo
+  insuficiente. Ou pior: ordens executadas, dias se passam, e o retorno nunca
+  aparece. Os dois sintomas vêm do mesmo mal-entendido: no DeepBook V3 seus
+  fundos de negociação não moram na carteira. Moram num
+  <strong>BalanceManager</strong>, e existem em três estados diferentes.</p>
+
+  <h2>Livre, bloqueado, liquidado</h2>
+
+  <p>O BalanceManager é o objeto on-chain que guarda os fundos que lastreiam
+  suas ordens. Cada moeda rastreada está em exatamente um de três estados:</p>
+
+  <ul>
+    <li><strong>Livre</strong> — disponível. Lastreia novas ordens ou pode ser
+    sacado de volta à carteira.</li>
+    <li><strong>Bloqueado</strong> — comprometido com ordens abertas agora.
+    Continua sendo seu, mas não é gastável até a ordem ser cancelada ou
+    executada. É o estado que quebra bots que só leem o livre.</li>
+    <li><strong>Liquidado</strong> — resultado de fills parado no limbo. Não é
+    bloqueado, mas também não é livre: nada se move até você chamar
+    explicitamente <code>withdraw_settled_amounts</code>.</li>
+  </ul>
+
+  <h2>Onde dá errado na prática</h2>
+
+  <p><strong>1. Ler só o livre.</strong> Um bot que dimensiona ordens pelo saldo
+  livre vai subdimensionar para sempre quando uma grade de ordens abertas
+  tranca a maior parte dos fundos — e um bot que lê o total vai tentar gastar
+  dinheiro já comprometido. Reconcilie livre + bloqueado contra suas ordens
+  abertas, não contra a carteira.</p>
+
+  <p><strong>2. Esquecer o liquidado.</strong> Este é o vazamento silencioso.
+  Fills acumulam no bucket liquidado e ficam parados — seu NAV está ok mas o
+  saldo utilizável só diminui. A correção é varrer os fundos liquidados na
+  mesma transação do gerenciamento de ordens:</p>
+
+  <pre><code>// dentro do mesmo PTB do cancel + place
+tx.moveCall({
+  target: `${PKG}::pool::withdraw_settled_amounts`,
+  arguments: [tx.object(config.id), managerObj, proof],
+  typeArguments: [config.baseType, config.quoteType],
+});</code></pre>
+
+  <p>Encadear <code>cancel_all → place_limit_order →
+  withdraw_settled_amounts</code> numa única transação transforma a liquidação
+  em um não-problema: a cada rebalanceamento, o resultado do que executou já é
+  reciclado.</p>
+
+  <p><strong>3. DEEP bloqueado continua sendo DEEP.</strong> O saldo de taxas
+  segue as mesmas regras — DEEP comprometido com taxas de ordens abertas conta
+  como bloqueado, e é por isso que um manager com 50 DEEP ainda pode cair no
+  <a href="/blog/deepbook-moveabort-paywithdeep.pt.html">MoveAbort código 3</a>
+  numa taxa de 0,5 DEEP.</p>
+
+  <p><strong>4. Fundos presos em outras pools.</strong> Ordens abertas numa
+  pool que você não opera mais mantêm o colateral bloqueado. Uma "limpeza de
+  satélites" periódica — cancelar ordens velhas em pools secundárias e sacar —
+  é operação obrigatória, não caso de borda.</p>
+
+  <h2>Regras operacionais que adotamos</h2>
+
+  <ul>
+    <li><strong>Dimensione pelo livre, reconcilie contra ordens abertas.</strong>
+    O estado do manager, não a carteira, é a fonte da verdade.</li>
+    <li><strong>Varrer o liquidado na mesma tx</strong> do cancel+place — nunca
+    como um job separado que pode falhar.</li>
+    <li><strong>Trate o bloqueado como gasto</strong> para fins de risco: ele
+    lastreia ordens que podem executar.</li>
+    <li><strong>Limpe pools satélite em agenda,</strong> não quando notar o
+    desvio.</li>
+  </ul>
+
+  <h2>Resultado</h2>
+
+  <p>Com o liquidado varrido automaticamente e as ordens dimensionadas pelo
+  saldo livre real, os bugs de "dinheiro sumido" desaparecem por completo — a
+  máquina de estados do manager faz exatamente o que promete, seu bot só
+  precisa ler as três colunas.</p>
+  <p class="post-outro">O SuiKit é um source kit de bot para DeepBook V3 — o sweep de liquidado, a limpeza de satélites e a reconciliação de saldos descritos aqui já vêm na caixa. <a href="/">Ver o kit →</a></p>
+  <p><a href="/blog/index.pt.html">← Voltar para todos os posts</a></p>
+  <p class="share">Compartilhar: <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsuikit.dev%2Fblog%2Fdeepbook-balancemanager-locked-balances.pt.html&text=DeepBook+V3+BalanceManager+%E2%80%94+livre+vs+bloqueado+vs+liquidado%2C+e+onde+est%C3%A1+seu+saldo" target="_blank" rel="noopener">X</a></p>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Sui Kit / DeepBook V3</h4>
+        <a href="/index.pt.html#what">O Kit</a>
+        <a href="/index.pt.html#inside">Conteúdo</a>
+        <a href="/index.pt.html#get">Obter acesso</a>
+        <a href="/blog/index.pt.html">Blog</a>
+      </div>
+      <div>
+        <h4>Protocolo</h4>
+        <a href="https://docs.sui.io/onchain-finance/deepbook/" target="_blank" rel="noopener">DeepBook Docs</a>
+        <a href="https://github.com/MystenLabs/deepbookv3" target="_blank" rel="noopener">DeepBook GitHub</a>
+      </div>
+      <div>
+        <h4>Rede</h4>
+        <a href="https://sui.io" target="_blank" rel="noopener">Sui</a>
+        <a href="https://deepbook.xyz" target="_blank" rel="noopener">DeepBook</a>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Telegram</a>
+        <a href="mailto:contact@suikit.dev">contact@suikit.dev</a>
+        <a href="https://x.com/suikit_dev" target="_blank" rel="noopener">X</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal.pt.html">Termos &amp; Privacidade</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">SuiKit</div>
+  </div>
+</footer>
+
+<!-- ============ checkout modal ============ -->
+<div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-label="Pagar com carteira Sui">
+  <div class="pay-box">
+    <button class="pay-x" id="pay-close" aria-label="Close">✕</button>
+    <div class="pay-head">
+      <span class="pay-badge">SUIKIT · CHECKOUT</span>
+      <h3>$100 USDC · acesso ao repo privado</h3>
+    </div>
+
+    <div id="pay-step-wallets" class="pay-step">
+      <p class="muted">Escolha uma carteira Sui para continuar.</p>
+      <div id="wallet-list"></div>
+    </div>
+
+    <div id="pay-step-pay" class="pay-step hidden">
+      <p class="muted">Pagando como <strong class="mono" id="pay-account"></strong></p>
+      <p class="muted small">Você assinará uma transação: <strong>$100 USDC → vendedor</strong>.
+      O gas em SUI é pago pela sua carteira, como sempre.</p>
+      <button class="btn btn-ink" id="pay-btn">Pagar $100 USDC</button>
+      <p class="sec-note">🔒 A assinatura cobre apenas esta transferência de USDC.<br>Nunca compartilhe sua seed phrase — nós nunca pedimos.</p>
+      <button class="link-btn" id="pay-back">← escolher outra carteira</button>
+      <p class="muted small">Já pagou de outra carteira? Envie o digest ao
+      <a href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">@sui_kit_bot</a> — não pague de novo.</p>
+    </div>
+
+    <div id="pay-step-done" class="pay-step hidden">
+      <div class="done-mark">✓</div>
+      <p><strong>Pagamento enviado.</strong></p>
+      <p class="muted small">Digest da transação:</p>
+      <p class="digest mono" id="pay-digest"></p>
+      <div class="digest-actions">
+        <button class="link-btn" id="copy-digest">copiar</button>
+        <a class="link-btn" id="suiscan-link" href="#" target="_blank" rel="noopener">ver no suiscan ↗</a>
+      </div>
+      <div class="done-note">
+        <p>Para concluir o acesso, abra nosso bot no Telegram — seu digest já vai
+        anexado. Ele verifica o pagamento e pergunta seu <strong>usuário do
+        GitHub</strong> (e opcionalmente seu <strong>e-mail</strong> para convites
+        prioritários). O convite costuma chegar em menos de um minuto.
+        Se algo der errado, fale com o bot — uma pessoa lê as mensagens.</p>
+        <a class="btn btn-ink" id="tg-final-link" href="https://t.me/sui_kit_bot" target="_blank" rel="noopener">Abrir bot no Telegram →</a>
+      </div>
+    </div>
+
+    <div id="pay-step-error" class="pay-step hidden">
+      <div class="err-mark">!</div>
+      <p><strong>Algo deu errado</strong></p>
+      <p class="muted small" id="pay-error-msg"></p>
+      <button class="link-btn" id="pay-retry">tentar novamente</button>
+    </div>
+
+        <div class="pay-acct" id="pay-acct" hidden>
+      <span class="muted small">Conectada: <strong class="mono" id="pay-acct-addr"></strong></span>
+      <button class="link-btn" id="pay-disconnect">desconectar</button>
+    </div>
+    <p class="pay-foot">Os pagamentos são liquidados on-chain para o endereço do vendedor. Sem custódia, sem dados de cartão.
+    Só solicitamos a assinatura da transferência de USDC — nunca pediremos
+    sua seed phrase ou chave privada.</p>
+  </div>
+</div>
+
+
+<script type="module" src="/js/main.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c93b42e289a540febf7f213a082083ba"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

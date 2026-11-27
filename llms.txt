@@ -47,3 +47,4 @@ reference code instead of guesses.
 - https://suikit.dev/blog/what-is-suikit-how-to-buy.html — product overview + purchase flow
 - https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html — Sui JSON-RPC deprecation → GraphQL migration guide
 - https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html — MoveAbort code 3 / pay_with_deep silent order failure fix
+- https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html — BalanceManager free/locked/settled states & settled-sweep pattern
