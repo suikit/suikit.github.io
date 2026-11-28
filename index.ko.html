@@ -51,12 +51,13 @@
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "Worldwide",
+          "applicableCountry": "US",
           "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
         },
         "shippingDetails": {
           "@type": "OfferShippingDetails",
           "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
+          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" },
           "deliveryTime": {
             "@type": "ShippingDeliveryTime",
             "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
