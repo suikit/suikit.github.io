@@ -26,8 +26,7 @@
 <link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html">
 <link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
 <link rel="stylesheet" href="css/style.css">
-<script type="application/ld+json">
-{
+<script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -35,7 +34,11 @@
       "@id": "https://suikit.dev/#website",
       "url": "https://suikit.dev/",
       "name": "Sui Kit",
-      "inLanguage": ["en", "pt-BR", "ko"]
+      "inLanguage": [
+        "en",
+        "pt-BR",
+        "ko"
+      ]
     },
     {
       "@type": "Product",
@@ -43,7 +46,10 @@
       "description": "Kit de desenvolvimento para criar bots de negociação na DeepBook V3 (Sui): motor de execução, camada de decisão quant determinística e ferramentas de operação — vendido como código-fonte.",
       "url": "https://suikit.dev/index.pt.html",
       "image": "https://suikit.dev/og.png",
-      "brand": { "@type": "Brand", "name": "Sui Kit" },
+      "brand": {
+        "@type": "Brand",
+        "name": "Sui Kit"
+      },
       "offers": {
         "@type": "Offer",
         "price": "100",
@@ -56,12 +62,29 @@
         },
         "shippingDetails": {
           "@type": "OfferShippingDetails",
-          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
-          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" },
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "0",
+            "currency": "USD"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "US"
+          },
           "deliveryTime": {
             "@type": "ShippingDeliveryTime",
-            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
-            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 1,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 0,
+              "unitCode": "DAY"
+            }
           }
         },
         "url": "https://suikit.dev/index.pt.html"
@@ -70,21 +93,106 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Este bot dá lucro?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Nenhuma alegação é feita. O kit vende infraestrutura de execução e conhecimento de implementação para DeepBook V3 — estratégias de referência para estudo, não promessa de lucro." } },
-        { "@type": "Question", "name": "O que preciso para executá-lo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Node.js 20+, uma carteira Sui com um objeto BalanceManager da DeepBook V3 e uma pequena quantidade de SUI para gas. Integrações com LLM são opcionais." } },
-        { "@type": "Question", "name": "Como o acesso é entregue?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pague $100 USDC on-chain; o pagamento é verificado e você recebe um convite para o repositório privado no GitHub." } },
-        { "@type": "Question", "name": "Qual é a política de reembolso?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pagamentos on-chain em USDC não podem ser revertidos. Todas as vendas são finais — sem reembolso após a verificação do pagamento." } },
-        { "@type": "Question", "name": "É afiliado à Mysten Labs ou à Sui Foundation?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Não. É um projeto independente, sem afiliação, endosso ou patrocínio da Mysten Labs ou da Sui Foundation." } }
+        {
+          "@type": "Question",
+          "name": "Este bot dá lucro?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nenhuma promessa é feita — e nenhuma deveria ser. Este kit vende infraestrutura de execução e know-how de implementação para o DeepBook V3. As estratégias incluídas são implementações de referência para estudo e extensão, não uma promessa de lucro. Negociar ativos digitais envolve risco real de perda."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "O que preciso para rodar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Node.js 20+, uma carteira Sui com um objeto BalanceManager do DeepBook V3 e um pouco de SUI para gas. Chave de API DeepSeek e Ollama são opcionais — o motor quant determinístico roda sem nenhum LLM."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como o acesso é entregue?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Conecte uma carteira Sui (Slush, Sui Wallet, etc.), pague $100 USDC on-chain e envie o digest da transação junto com seu usuário do GitHub pelo link exibido após o pagamento. Assim que o pagamento for verificado on-chain, você será convidado ao repositório privado — com acesso de leitura à main, incluindo toda a documentação e commits futuros. A entrega é instantânea: nosso bot no Telegram verifica o digest on-chain e envia seu convite do GitHub em segundos."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Compradores antecipados ganham algo extra?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. Compradores que registrarem seu e-mail (opcional — basta incluí-lo junto com o digest + usuário do GitHub) recebem convites prioritários e ofertas de acesso antecipado quando edições estendidas do kit forem lançadas. O registro também é como você ficará sabendo de atualizações importantes no repositório."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Em quais pools ele opera?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A camada de execução é agnóstica a pools. A configuração de referência concentra-se em SUI/USDC pela profundidade e trata pools satélites (DEEP, WAL, USDSUI, NS) como alvos de limpeza — um padrão que você pode estender."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Qual é a política de reembolso?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Os pagamentos são feitos on-chain em USDC e não podem ser revertidos. Como se trata de acesso a código-fonte digital entregue na íntegra, todas as vendas são finais — sem reembolso após a verificação do pagamento. A única exceção é falha do nosso lado (ex.: pagamento verificado, mas o convite do repo nunca foi entregue). Em caso de dúvida, pergunte antes de comprar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Posso redistribuir ou revender?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Não. A licença concede apenas uso pessoal — use, leia e modifique para você. Redistribuição pública e revenda são proibidas. Veja o arquivo LICENSE no repositório."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Foi testado em produção?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "O codebase é um snapshot de um bot que rodou ao vivo na mainnet da Sui. Dito isso, seu ambiente é diferente — o README deixa explícito que a operação ao vivo é sua responsabilidade. Comece pequeno, acompanhe o dashboard e mantenha o script kill-switch à mão."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Qual rede e qual ativo vocês aceitam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "USDC somente na Sui mainnet. O checkout assina uma única transação que transfere exatamente $100 USDC da sua carteira para o endereço Sui do vendedor — nenhuma outra rede ou token é aceita."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Por que pagamento único, e não assinatura?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Porque preferimos alcançar mais builders por um preço menor. Um único pagamento de $100 mantém o kit acessível a indivíduos e inclui todos os commits futuros na main — sem mensalidade, sem camadas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "É um produto oficial da Sui ou da DeepBook?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Não. O SuiKit é um projeto independente e não é afiliado, endossado ou patrocinado pela Mysten Labs, pela Sui Foundation ou pela DeepBook. Sui e DeepBook são marcas de seus respectivos donos; as referências aqui são apenas descritivas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como faço uma pergunta antes de comprar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Escreva no Telegram para a resposta mais rápida — dúvidas sobre o que o kit cobre, compatibilidade ou o fluxo de compra são bem-vindas. Também pode enviar email para contact@suikit.dev. Respondemos perguntas técnicas, mas não damos conselhos financeiros."
+          }
+        }
       ]
     }
   ]
-}
-</script>
+}</script>
 <meta name="google-site-verification" content="1NvJtywhXcwcG0xbnTd3VVzF3WSsMH86I9o2vejpPd4" />
 </head>
 <body>

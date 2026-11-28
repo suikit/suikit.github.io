@@ -26,8 +26,7 @@
 <link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html">
 <link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
 <link rel="stylesheet" href="css/style.css">
-<script type="application/ld+json">
-{
+<script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -35,7 +34,11 @@
       "@id": "https://suikit.dev/#website",
       "url": "https://suikit.dev/",
       "name": "Sui Kit",
-      "inLanguage": ["en", "pt-BR", "ko"]
+      "inLanguage": [
+        "en",
+        "pt-BR",
+        "ko"
+      ]
     },
     {
       "@type": "Product",
@@ -43,7 +46,10 @@
       "description": "Development kit for building trading bots on DeepBook V3 (Sui): execution engine, deterministic quant decision layer, and ops tooling — sold as source code.",
       "url": "https://suikit.dev/",
       "image": "https://suikit.dev/og.png",
-      "brand": { "@type": "Brand", "name": "Sui Kit" },
+      "brand": {
+        "@type": "Brand",
+        "name": "Sui Kit"
+      },
       "offers": {
         "@type": "Offer",
         "price": "100",
@@ -56,12 +62,29 @@
         },
         "shippingDetails": {
           "@type": "OfferShippingDetails",
-          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
-          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" },
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "0",
+            "currency": "USD"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "US"
+          },
           "deliveryTime": {
             "@type": "ShippingDeliveryTime",
-            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
-            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 1,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 0,
+              "unitCode": "DAY"
+            }
           }
         },
         "url": "https://suikit.dev/"
@@ -70,27 +93,106 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Does this bot make money?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No claims are made. The kit sells execution infrastructure and implementation know-how for DeepBook V3 — reference strategies for study and extension, not a promise of profit." } },
-        { "@type": "Question", "name": "What do I need to run it?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Node.js 20+, a Sui wallet with a DeepBook V3 BalanceManager object, and a small amount of SUI for gas. LLM integrations are optional." } },
-        { "@type": "Question", "name": "How is access delivered?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pay $100 USDC on-chain, then the payment is verified on-chain and you are invited to the private GitHub repository." } },
-        { "@type": "Question", "name": "Which pools does it trade?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The execution layer is pool-agnostic. The reference config concentrates on SUI/USDC and treats satellite pools as cleanup targets." } },
-        { "@type": "Question", "name": "What is the refund policy?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Payments are made on-chain in USDC and cannot be reversed. All sales are final — no refunds once payment is verified." } },
-        { "@type": "Question", "name": "Can I redistribute or resell it?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The license grants personal use only. Public redistribution and resale are prohibited." } },
-        { "@type": "Question", "name": "Is it production-tested?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The codebase is a snapshot of a bot that has run live on Sui mainnet. Live operation in your environment is your responsibility." } },
-        { "@type": "Question", "name": "Is it affiliated with Mysten Labs or the Sui Foundation?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. It is an independent project, not affiliated with, endorsed, or sponsored by Mysten Labs or the Sui Foundation." } }
+        {
+          "@type": "Question",
+          "name": "Does this bot make money?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No claims are made — and none should be. This kit sells execution infrastructure and implementation know-how for DeepBook V3. The bundled strategies are reference implementations for study and extension, not a promise of profit. Trading digital assets involves real risk of loss."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do I need to run it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Node.js 20+, a Sui wallet with a DeepBook V3 BalanceManager object, and a small amount of SUI for gas. A DeepSeek API key and Ollama are optional — the deterministic quant engine runs without any LLM."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is access delivered?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Connect a Sui wallet (Slush, Sui Wallet, etc.), pay $100 USDC on-chain, then send the transaction digest and your GitHub username via the link shown after payment. Once the payment is verified on-chain, you'll be invited to the private repository — with read access to main, including all documentation and future commits. Delivery is instant: our Telegram bot verifies the digest on-chain and sends your GitHub invite within seconds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do early buyers get anything extra?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Buyers who register their email address (optional — just include it with your digest + GitHub username) get priority invitations and early-access offers when extended editions of the kit are released. Registration is also how you'll hear about major updates pushed to the repo."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which pools does it trade?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The execution layer is pool-agnostic. The reference config concentrates on SUI/USDC for depth and treats satellite pools (DEEP, WAL, USDSUI, NS) as cleanup targets — a pattern you can extend."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the refund policy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Payments are made on-chain in USDC and cannot be reversed. As this is digital source access delivered in full, all sales are final — no refunds once the payment is verified. The only exception is a fault on our side (e.g., payment verified but the repo invite was never delivered). If in doubt, please ask before buying."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I redistribute or resell it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The license grants personal use only — use, read, and modify for yourself. Public redistribution and resale are prohibited. See the LICENSE file in the repo."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it production-tested?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The codebase is a snapshot of a bot that has run live on Sui mainnet. That said, your environment differs — the README is explicit that live operation is your responsibility. Start small, watch the dashboard, and keep the kill-switch script handy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which network and asset do you accept?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "USDC on Sui mainnet only. The checkout signs a single transaction that transfers exactly $100 USDC from your wallet to the seller's Sui address — no other chains or tokens are supported."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why a one-time payment, not a subscription?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because we'd rather reach more builders at a lower price. A single $100 payment keeps the kit accessible to individuals, and it includes every future commit on main — no monthly drip, no tier gates."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this an official Sui or DeepBook product?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. SuiKit is an independent project and is not affiliated with, endorsed, or sponsored by Mysten Labs, the Sui Foundation, or DeepBook. Sui and DeepBook are trademarks of their respective owners; references here are descriptive only."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I ask a question before buying?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Message us on Telegram for the fastest reply — questions about what the kit covers, compatibility, or the purchase flow are all welcome. You can also email contact@suikit.dev. We answer technical questions, but not financial or investment advice."
+          }
+        }
       ]
     }
   ]
-}
-</script>
+}</script>
 <meta name="google-site-verification" content="1NvJtywhXcwcG0xbnTd3VVzF3WSsMH86I9o2vejpPd4" />
 </head>
 <body>

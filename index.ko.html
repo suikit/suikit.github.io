@@ -26,8 +26,7 @@
 <link rel="alternate" hreflang="ko" href="https://suikit.dev/index.ko.html">
 <link rel="alternate" hreflang="x-default" href="https://suikit.dev/">
 <link rel="stylesheet" href="css/style.css">
-<script type="application/ld+json">
-{
+<script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -35,7 +34,9 @@
       "@id": "https://suikit.dev/#website",
       "url": "https://suikit.dev/",
       "name": "SuiKit",
-      "inLanguage": ["ko"]
+      "inLanguage": [
+        "ko"
+      ]
     },
     {
       "@type": "Product",
@@ -43,7 +44,10 @@
       "description": "DeepBook V3(Sui) 트레이딩 봇 개발 키트: 실행 엔진, 결정론적 퀀트 의사결정 레이어, 운영 툴링 — 소스 코드로 판매.",
       "url": "https://suikit.dev/",
       "image": "https://suikit.dev/og.png",
-      "brand": { "@type": "Brand", "name": "Sui Kit" },
+      "brand": {
+        "@type": "Brand",
+        "name": "Sui Kit"
+      },
       "offers": {
         "@type": "Offer",
         "price": "100",
@@ -56,12 +60,29 @@
         },
         "shippingDetails": {
           "@type": "OfferShippingDetails",
-          "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
-          "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" },
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "0",
+            "currency": "USD"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "US"
+          },
           "deliveryTime": {
             "@type": "ShippingDeliveryTime",
-            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
-            "transitTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" }
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 1,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 0,
+              "unitCode": "DAY"
+            }
           }
         },
         "url": "https://suikit.dev/"
@@ -70,27 +91,106 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "이 봇은 돈을 벌어주나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "수익 약속은 없습니다. 이 키트는 DeepBook V3용 실행 인프라와 구현 노하우를 판매하며, 포함된 전략은 연구·확장용 레퍼런스입니다." } },
-        { "@type": "Question", "name": "실행에 필요한 것은?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Node.js 20+, DeepBook V3 BalanceManager 오브젝트가 있는 Sui 월렛, gas용 소량의 SUI. LLM 연동은 선택 사항입니다." } },
-        { "@type": "Question", "name": "액세스는 어떻게 전달되나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "$100 USDC를 온체인으로 결제하면, 결제 확인 후 비공개 GitHub 리포지토리에 초대됩니다." } },
-        { "@type": "Question", "name": "어떤 풀에서 거래하나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "실행 레이어는 풀에 구애받지 않습니다. 레퍼런스 설정은 SUI/USDC에 집중하고 서브 풀은 정리 대상으로 다룹니다." } },
-        { "@type": "Question", "name": "환불 정책은?",
-          "acceptedAnswer": { "@type": "Answer", "text": "결제는 온체인 USDC로 이루어지며 취소할 수 없습니다. 결제 확인 후에는 환불되지 않습니다." } },
-        { "@type": "Question", "name": "재배포하거나 재판매할 수 있나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "안 됩니다. 라이선스는 개인 사용 전용이며 공개 재배포와 재판매는 금지됩니다." } },
-        { "@type": "Question", "name": "프로덕션에서 검증됐나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "이 코드베이스는 Sui 메인넷에서 실제로 동작한 봇의 스냅샷입니다. 귀하의 환경에서의 실전 운영은 본인 책임입니다." } },
-        { "@type": "Question", "name": "Mysten Labs나 Sui Foundation과 관련이 있나요?",
-          "acceptedAnswer": { "@type": "Answer", "text": "없습니다. 독립 프로젝트이며 Mysten Labs 또는 Sui Foundation과 제휴·보증·후원 관계가 없습니다." } }
+        {
+          "@type": "Question",
+          "name": "이 봇은 돈을 벌어주나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "그런 주장은 하지 않습니다 — 할 수도 없습니다. 이 키트는 DeepBook V3용 실행 인프라와 구현 노하우를 판매합니다. 포함된 전략은 연구와 확장을 위한 레퍼런스 구현이며 수익 약속이 아닙니다. 디지털 자산 거래에는 실제 손실 위험이 있습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "실행에 필요한 것은?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Node.js 20+, DeepBook V3 BalanceManager 오브젝트가 있는 Sui 월렛, gas용 소량의 SUI. DeepSeek API 키와 Ollama는 선택 사항 — 결정론적 퀀트 엔진은 LLM 없이 동작합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "액세스는 어떻게 전달되나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sui 월렛(Slush, Sui Wallet 등)을 연결하고 온체인으로 $100 USDC를 결제한 뒤, 결제 후 표시되는 링크로 트랜잭션 digest와 GitHub 사용자명을 보내세요. 결제가 온체인에서 확인되면 비공개 리포지토리에 초대됩니다 — main 읽기 권한, 모든 문서와 향후 커밋 포함. 전달은 즉시입니다: Telegram 봇이 digest를 온체인에서 검증하고 GitHub 초대를 몇 초 만에 보냅니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "얼리 구매자에게 추가 혜택이 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "네. 이메일 주소를 등록한 구매자(선택 사항 — digest + GitHub 사용자명과 함께 보내기만 하면 됩니다)는 우선 초대와, 확장 에디션 출시 시 얼리 액세스 혜택을 받습니다. 등록은 repo의 주요 업데이트 소식을 받는 방법이기도 합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "어떤 풀에서 거래하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "실행 레이어는 풀에 구애받지 않습니다. 레퍼런스 설정은 깊이를 위해 SUI/USDC에 집중하고 서브 풀(DEEP, WAL, USDSUI, NS)은 정리 대상으로 다룹니다 — 확장 가능한 패턴입니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "환불 정책은?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "결제는 온체인 USDC로 이루어지며 취소할 수 없습니다. 전부 전달되는 디지털 소스 액세스이므로, 모든 판매는 최종이며 환불 불가 입니다 — 결제 확인 후. 유일한 예외는 저희 측 과실(예: 결제는 확인됐으나 repo 초대가 전달되지 않은 경우)뿐입니다. 궁금한 점은 구매 전에 문의하세요."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "재배포하거나 재판매할 수 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "안 됩니다. 라이선스는 개인 사용만 허가합니다 — 본인을 위한 사용, 열람, 수정. 공개 재배포와 재판매는 금지됩니다. repo의 LICENSE 파일을 참조하세요."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "프로덕션에서 검증됐나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "이 코드베이스는 Sui 메인넷에서 실제로 동작한 봇의 스냅샷입니다. 다만 환경은 다릅니다 — README에도 실전 운영은 본인 책임임이 명시되어 있습니다. 작게 시작하고, 대시보드를 보고, 킬 스위치 스크립트를 준비하세요."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "어떤 네트워크와 자산을 받나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "USDC, Sui 메인넷만 지원. 체크아웃은 월렛에서 판매자의 Sui 주소로 정확히 $100 USDC를 전송하는 하나의 트랜잭션에 서명합니다 — 다른 체인이나 토큰은 지원하지 않습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "왜 구독이 아니라 일회 결제인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "더 낮은 가격으로 더 많은 빌더에게 닿고 싶기 때문입니다. $100 한 번의 결제로 개인에게 키트를 접근 가능하게 유지하고, main의 모든 향후 커밋까지 포함됩니다 — 월정액도, 등급 제한도 없습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Sui 또는 DeepBook의 공식 제품인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "아닙니다. SuiKit은 독립 프로젝트이며 Mysten Labs, Sui Foundation, DeepBook과 제휴·보증·후원 관계가 없습니다. Sui와 DeepBook은 각 소유자의 상표이며, 여기서의 언급은 설명 목적일 뿐입니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "구매 전에 질문하려면 어떻게 하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "가장 빠른 답변은 Telegram으로 문의해 주세요 — 키트 범위, 호환성, 구매 절차에 대한 질문은 무엇이든 환영합니다. 이메일 contact@suikit.dev도 가능합니다. 기술적 질문에는 답하지만 금융·투자 조언은 제공하지 않습니다."
+          }
+        }
       ]
     }
   ]
-}
-</script>
+}</script>
 <meta name="google-site-verification" content="1NvJtywhXcwcG0xbnTd3VVzF3WSsMH86I9o2vejpPd4" />
 </head>
 <body>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>SuiKit Blog — Engineering notes</title>
+  <link>https://suikit.dev/blog/</link>
+  <atom:link href="https://suikit.dev/blog/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>DeepBook V3 on Sui — implementation notes from a bot that actually trades.</description>
+  <language>en</language>
+  <lastBuildDate>Fri, 28 Nov 2026 00:00:00 GMT</lastBuildDate>
+  <item>
+    <title>DeepBook V3 BalanceManager — free vs locked vs settled, and where your balance actually is</title>
+    <link>https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html</link>
+    <guid>https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html</guid>
+    <pubDate>Fri, 27 Nov 2026 00:00:00 GMT</pubDate>
+    <description>Your balance lives in three states — free, locked, settled — and reading only one is how bots lose track of their own money. The settled-sweep pattern that fixes it.</description>
+  </item>
+  <item>
+    <title>DeepBook V3 MoveAbort code 3 — the silent pay_with_deep failure every bot hits</title>
+    <link>https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html</link>
+    <guid>https://suikit.dev/blog/deepbook-moveabort-paywithdeep.html</guid>
+    <pubDate>Sun, 23 Nov 2026 00:00:00 GMT</pubDate>
+    <description>Your limit order aborts with MoveAbort code 3 and no useful message. It is almost always an insufficient or locked DEEP fee balance — how to detect it and the pay_with_deep=false fallback.</description>
+  </item>
+  <item>
+    <title>Sui deprecated public JSON-RPC — migrating payment verification to GraphQL</title>
+    <link>https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html</link>
+    <guid>https://suikit.dev/blog/sui-jsonrpc-graphql-migration.html</guid>
+    <pubDate>Sun, 23 Nov 2026 00:00:00 GMT</pubDate>
+    <description>Public JSON-RPC on Sui fullnodes was deprecated. The exact GraphQL migration that kept on-chain USDC payment verification working — queries, gotchas, and code.</description>
+  </item>
+  <item>
+    <title>What is SuiKit — and how to buy it</title>
+    <link>https://suikit.dev/blog/what-is-suikit-how-to-buy.html</link>
+    <guid>https://suikit.dev/blog/what-is-suikit-how-to-buy.html</guid>
+    <pubDate>Sun, 23 Nov 2026 00:00:00 GMT</pubDate>
+    <description>A source-available development kit for DeepBook V3 on Sui. What you get, what it is not, and the step-by-step purchase flow.</description>
+  </item>
+</channel>
+</rss>

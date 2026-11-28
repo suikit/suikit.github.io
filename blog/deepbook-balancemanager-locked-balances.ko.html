@@ -6,13 +6,18 @@
 <title>DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체 | SuiKit Blog</title>
 <meta name="description" content="지갑에는 자산이 있는데 봇은 잔액 부족으로 실패하고, 체결 금액은 돌아오지 않습니다. DeepBook V3에서 잔액은 BalanceManager 안의 세 가지 상태로 존재합니다. free·locked·settled의 실제 동작과, 자금을 계속 흐르게 하는 settled sweep 패턴을 정리했습니다.">
 <link rel="canonical" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html">
+<link rel="alternate" hreflang="en" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html">
+<link rel="alternate" hreflang="pt" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.pt.html">
+<link rel="alternate" hreflang="ko" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html">
+<link rel="alternate" hreflang="x-default" href="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.html">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate" type="application/rss+xml" title="SuiKit Blog" href="/blog/feed.xml">
 <link rel="stylesheet" href="/css/style.css">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DeepBook V3 BalanceManager — free·locked·settled, 잔액의 실체">
 <meta property="og:description" content="지갑에는 자산이 있는데 봇은 잔액 부족으로 실패하고, 체결 금액은 돌아오지 않습니다. DeepBook V3에서 잔액은 BalanceManager 안의 세 가지 상태로 존재합니다. free·locked·settled의 실제 동작과, 자금을 계속 흐르게 하는 settled sweep 패턴을 정리했습니다.">
 <meta property="og:url" content="https://suikit.dev/blog/deepbook-balancemanager-locked-balances.ko.html">
-<meta property="og:image" content="https://suikit.dev/og.png">
+<meta property="og:image" content="https://suikit.dev/blog/img/og-deepbook-balancemanager-locked-balances.png">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -136,6 +141,12 @@ tx.moveCall({
   <p class="post-outro">SuiKit은 DeepBook V3 봇 소스 키트입니다 — 여기서 설명한 settled 회수, 위성 풀 정리, 잔액 재무장이 그대로 포함되어 있습니다. <a href="/">키트 보기 →</a></p>
   <p><a href="/blog/index.ko.html">← 모든 글로 돌아가기</a></p>
   <p class="share">공유: <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsuikit.dev%2Fblog%2Fdeepbook-balancemanager-locked-balances.ko.html&text=DeepBook+V3+BalanceManager+%E2%80%94+free%C2%B7locked%C2%B7settled%2C+%EC%9E%94%EC%95%A1%EC%9D%98+%EC%8B%A4%EC%B2%B4" target="_blank" rel="noopener">X</a></p>
+  <div class="related">
+    <h4>블로그의 다른 글</h4>
+    <a href="/blog/deepbook-moveabort-paywithdeep.ko.html">DeepBook V3 MoveAbort code 3 — pay_with_deep의 조용한 실패</a>
+    <a href="/blog/sui-jsonrpc-graphql-migration.ko.html">Sui 공개 JSON-RPC 폐지 — GraphQL 마이그레이션</a>
+    <a href="/blog/what-is-suikit-how-to-buy.ko.html">SuiKit이란 — 그리고 구매 방법</a>
+  </div>
 </article>
 
 <footer>

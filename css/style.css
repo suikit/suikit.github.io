@@ -462,7 +462,7 @@ a.news-item:hover .news-body strong{color:var(--blue)}
 .post-outro{margin-top:40px;padding:20px 22px;background:#f6f7fb;border-radius:12px;border:1px solid var(--line)}
 .post-outro a{color:var(--blue);font-weight:600}
 .post-back{display:inline-block;margin-top:32px;color:var(--blue);font-size:14px}
-.post img{max-width:460px;width:100%;border-radius:14px;border:1px solid var(--line);margin:18px 0;display:block;box-shadow:0 10px 30px rgba(10,20,60,.12)}
+.post img{max-width:460px;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);margin:18px 0;display:block;box-shadow:0 10px 30px rgba(10,20,60,.12)}
 .digest-actions .link-btn{margin:0}
 .done-note{
   margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);
@@ -554,3 +554,7 @@ a.news-item:hover .news-body strong{color:var(--blue)}
 .foot-grid a svg{width:12px;height:12px;vertical-align:-1px;margin-right:6px;fill:currentColor}
 
 .share{margin-top:32px;font-size:13.5px;color:#6a7390}
+.related{margin-top:40px;padding-top:28px;border-top:1px solid var(--line)}
+.related h4{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#6a7390;margin-bottom:12px}
+.related a{display:block;padding:9px 0;font-weight:600;color:#2430a0;border-bottom:1px solid #eef1f8;transition:color .15s}
+.related a:hover{color:var(--blue)}
